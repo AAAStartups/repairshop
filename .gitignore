@@ -49,3 +49,6 @@ android/.gradle/
 android/local.properties
 *.keystore
 
+
+scratch/
+

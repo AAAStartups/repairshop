@@ -30,6 +30,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   int _currentTickerIndex = 0;
   Timer? _tickerTimer;
 
+  // Search placeholder cycling timer
+  int _searchPlaceholderIndex = 0;
+  Timer? _searchTimer;
+  final List<String> _searchPlaceholders = [
+    'Search iPhone 16 Pro, screen replacement...',
+    'Search MacBook M2, battery overhaul...',
+    'Search Samsung S24 Ultra, camera sensor...',
+    'Search OnePlus 12, fast-charging port...',
+    'Search Apple Watch Series 9, touch glass...',
+  ];
+
+  // Selected Device Category Filter (Circle Store-style top navigation rail)
+  int _selectedDeviceCategoryIndex = 0;
+  final List<Map<String, dynamic>> _deviceCategories = [
+    {'name': 'Smartphones', 'icon': Icons.phone_iphone_rounded, 'count': '420+ Models'},
+    {'name': 'Laptops', 'icon': Icons.laptop_mac_rounded, 'count': '180+ Models'},
+    {'name': 'Tablets', 'icon': Icons.tablet_mac_rounded, 'count': '65+ Models'},
+    {'name': 'Smartwatches', 'icon': Icons.watch_rounded, 'count': '50+ Models'},
+    {'name': 'Audio & Pods', 'icon': Icons.headphones_rounded, 'count': '40+ Models'},
+    {'name': 'Consoles', 'icon': Icons.sports_esports_rounded, 'count': '25+ Models'},
+  ];
+
+  // Location state
+  String _selectedLocation = 'Indiranagar, Bangalore';
+
   final List<Map<String, dynamic>> _tickerActivities = [
     {
       'tag': 'ACTIVE NOW',
@@ -142,6 +167,62 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     },
   ];
 
+  // Circle Store-style curated popular listing repair cards
+  final List<Map<String, dynamic>> _popularRepairs = [
+    {
+      'device': 'iPhone 15 Pro',
+      'service': 'OLED Screen Replacement',
+      'part': 'OEM Grade Super Retina XDR',
+      'price': '₹4,999',
+      'mrp': '₹8,999',
+      'discount': '44% OFF',
+      'rating': '4.9',
+      'reviews': '840',
+      'turnaround': '2 Hours',
+      'badge': 'OEM Genuine',
+      'icon': '📱',
+    },
+    {
+      'device': 'MacBook Pro M2',
+      'service': '70Wh Battery Overhaul',
+      'part': 'Zero Cycle OEM Lithium Cell',
+      'price': '₹5,499',
+      'mrp': '₹9,999',
+      'discount': '45% OFF',
+      'rating': '4.95',
+      'reviews': '520',
+      'turnaround': '4 Hours',
+      'badge': '180D Guarantee',
+      'icon': '💻',
+    },
+    {
+      'device': 'OnePlus 12',
+      'service': 'Type-C Sub-Board Charging',
+      'part': '100W SuperVOOC PCB Assembly',
+      'price': '₹1,299',
+      'mrp': '₹2,499',
+      'discount': '48% OFF',
+      'rating': '4.85',
+      'reviews': '390',
+      'turnaround': '45 Mins',
+      'badge': 'Fast Fix',
+      'icon': '⚡',
+    },
+    {
+      'device': 'Samsung S24 Ultra',
+      'service': 'Triple Lens & Sensor Calib',
+      'part': '200MP ISOCELL Sensor Clean',
+      'price': '₹2,199',
+      'mrp': '₹3,999',
+      'discount': '45% OFF',
+      'rating': '4.9',
+      'reviews': '280',
+      'turnaround': '2 Hours',
+      'badge': 'Cleanroom',
+      'icon': '📷',
+    },
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -166,6 +247,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
     _startAutoScroll();
     _startTickerCycle();
+    _startSearchCycle();
   }
 
   void _startAutoScroll() {
@@ -193,15 +275,190 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     });
   }
 
+  void _startSearchCycle() {
+    _searchTimer?.cancel();
+    _searchTimer = Timer.periodic(const Duration(milliseconds: 4000), (timer) {
+      if (mounted) {
+        setState(() {
+          _searchPlaceholderIndex = (_searchPlaceholderIndex + 1) % _searchPlaceholders.length;
+        });
+      }
+    });
+  }
+
   @override
   void dispose() {
     _bannerTimer?.cancel();
     _tickerTimer?.cancel();
+    _searchTimer?.cancel();
     _bannerController.dispose();
     _radarController.dispose();
     _heroShimmerController.dispose();
     _floatController.dispose();
     super.dispose();
+  }
+
+  void _showLocationModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 44,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD1D9D6),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF003A26).withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.location_on_rounded, color: Color(0xFF003A26), size: 22),
+                  ),
+                  const SizedBox(width: 14),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Choose Your Pickup Location',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF003A26),
+                          ),
+                        ),
+                        Text(
+                          'Doorstep pickup available in 30 mins in Bengaluru',
+                          style: TextStyle(fontFamily: 'Inter', fontSize: 12, color: Color(0xFF5F6F67)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Popular Hubs
+              const Text(
+                'ACTIVE SERVICE HUBS (30-MIN SLOTS)',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  color: Color(0xFF5F6F67),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  'Indiranagar',
+                  'Koramangala',
+                  'HSR Layout',
+                  'Whitefield',
+                  'Jayanagar',
+                  'Electronic City',
+                  'MG Road',
+                  'Hebbal',
+                ].map((hub) {
+                  final isSelected = _selectedLocation.startsWith(hub);
+                  return QFPressable(
+                    onTap: () {
+                      setState(() => _selectedLocation = '$hub, Bangalore');
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Pickup location set to $hub, Bangalore')),
+                      );
+                    },
+                    pressedScale: 0.95,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: isSelected ? const Color(0xFF003A26) : const Color(0xFFF3F6F4),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: isSelected ? const Color(0xFF003A26) : const Color(0xFFD1D9D6),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.check_circle_rounded,
+                            size: 14,
+                            color: isSelected ? const Color(0xFFEDB000) : Colors.transparent,
+                          ),
+                          if (isSelected) const SizedBox(width: 4),
+                          Text(
+                            hub,
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 12.5,
+                              fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                              color: isSelected ? Colors.white : const Color(0xFF003A26),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 20),
+              // Pincode verify container
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEDB000).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFFEDB000).withValues(alpha: 0.3)),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.bolt_rounded, color: Color(0xFF003A26), size: 18),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Doorstep pickup and return delivery is 100% free across all Bengaluru pincodes.',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF003A26),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -217,10 +474,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildLiveStatusTicker(),
+                _buildDeviceNavigationRail(), // Circle Store-style category rail
                 _buildDynamicBanners(),
                 _buildHeroBookingCard(),
                 _buildQuickFixPills(),
                 _buildCategoriesGrid(),
+                _buildPopularRepairsShowcase(), // Circle Store-style listing cards
+                _buildMobileAppTrackerShowcase(), // QuickFix Customer App Feature
                 _buildLiveRepairFeed(),
                 _buildTrustShowcase(),
                 _buildStepByStepInteractive(),
@@ -332,20 +592,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                             ],
                           ),
                           QFPressable(
-                            onTap: () => context.push('/pickup-address'),
+                            onTap: _showLocationModal,
                             pressedScale: 0.98,
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Icon(Icons.location_on_rounded, size: 12, color: Color(0xFFEDB000)),
                                 const SizedBox(width: 3),
-                                Text(
-                                  'Indiranagar, Bangalore',
-                                  style: TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white.withValues(alpha: 0.8),
+                                Flexible(
+                                  child: Text(
+                                    _selectedLocation,
+                                    style: TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white.withValues(alpha: 0.8),
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                                 const Icon(Icons.keyboard_arrow_down_rounded, size: 14, color: Colors.white70),
@@ -356,7 +619,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       ),
                     ),
                     QFPressable(
-                      onTap: () {},
+                      onTap: () => context.push('/support'),
                       pressedScale: 0.9,
                       child: Container(
                         width: 40,
@@ -369,7 +632,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
-                            const Icon(Icons.notifications_none_rounded, color: Colors.white, size: 20),
+                            const Icon(Icons.headset_mic_rounded, color: Colors.white, size: 20),
                             Positioned(
                               top: 9,
                               right: 9,
@@ -420,16 +683,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   const SizedBox(width: 14),
                   const Icon(Icons.search_rounded, color: Color(0xFF003A26), size: 20),
                   const SizedBox(width: 10),
-                  const Expanded(
-                    child: Text(
-                      'Search iPhone 16, Samsung S25, battery...',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 13,
-                        color: Color(0xFF5F6F67),
-                        fontWeight: FontWeight.w500,
+                  Expanded(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 350),
+                      transitionBuilder: (child, animation) {
+                        return FadeTransition(opacity: animation, child: child);
+                      },
+                      child: Text(
+                        _searchPlaceholders[_searchPlaceholderIndex],
+                        key: ValueKey<int>(_searchPlaceholderIndex),
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12.5,
+                          color: Color(0xFF5F6F67),
+                          fontWeight: FontWeight.w500,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   Container(
@@ -611,6 +881,69 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     );
   }
 
+  /// Circle Store-style top device category navigation rail
+  Widget _buildDeviceNavigationRail() {
+    return Container(
+      height: 48,
+      margin: const EdgeInsets.only(top: 10),
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        scrollDirection: Axis.horizontal,
+        itemCount: _deviceCategories.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, i) {
+          final cat = _deviceCategories[i];
+          final isSelected = _selectedDeviceCategoryIndex == i;
+
+          return QFPressable(
+            onTap: () {
+              setState(() => _selectedDeviceCategoryIndex = i);
+              context.push('/select-brand');
+            },
+            pressedScale: 0.94,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: isSelected ? const Color(0xFF003A26) : Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: isSelected ? const Color(0xFF003A26) : const Color(0xFFD1D9D6),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: isSelected ? const Color(0xFF003A26).withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.02),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    cat['icon'] as IconData,
+                    size: 16,
+                    color: isSelected ? const Color(0xFFEDB000) : const Color(0xFF003A26),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    cat['name'] as String,
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 12,
+                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                      color: isSelected ? Colors.white : const Color(0xFF003A26),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildDynamicBanners() {
     return Column(
       children: [
@@ -780,7 +1113,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           builder: (context, child) {
             final shimmerVal = _heroShimmerController.value;
             final floatVal = math.sin(_floatController.value * math.pi);
-            // Pulsing glow factor
             final pulseFactor = (math.sin(shimmerVal * 2 * math.pi) + 1.0) / 2.0;
 
             return Container(
@@ -821,7 +1153,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     Positioned.fill(
                       child: LayoutBuilder(
                         builder: (context, constraints) {
-                          // Shimmer sweep traveling across -1.0 to 2.0 width
                           final sweepProgress = (shimmerVal * 3.0) - 1.0;
                           final sweepOffset = constraints.maxWidth * sweepProgress;
 
@@ -926,7 +1257,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                   ),
                                 ),
                                 const SizedBox(height: 16),
-                                // Next-gen animated action button
                                 QFPressable(
                                   onTap: () => context.push('/select-brand'),
                                   pressedScale: 0.94,
@@ -973,7 +1303,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                             ),
                           ),
                           const SizedBox(width: 10),
-                          // Floating decorative tool circle
                           Transform.translate(
                             offset: Offset(0, -6.0 * floatVal),
                             child: Container(
@@ -1147,7 +1476,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   ),
                   child: Stack(
                     children: [
-                      // Status / highlight tag
                       if (cat['tag'] != null)
                         Positioned(
                           top: 4,
@@ -1176,7 +1504,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                             ),
                           ),
                         ),
-                      // Card center content
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
                         child: Column(
@@ -1242,6 +1569,391 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 ),
               );
             },
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Circle Store-style curated popular repair listing cards
+  Widget _buildPopularRepairsShowcase() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Popular Verified Repairs',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF003A26),
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'Top booked fixes with genuine OEM parts in Bengaluru',
+                    style: TextStyle(fontFamily: 'Inter', fontSize: 11.5, color: Color(0xFF5F6F67)),
+                  ),
+                ],
+              ),
+              QFPressable(
+                onTap: () => context.push('/select-brand'),
+                pressedScale: 0.92,
+                child: const Text(
+                  'Explore All',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFFEDB000),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          // Horizontal scrolling cards replicating Circle Store product cards
+          SizedBox(
+            height: 250,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _popularRepairs.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 14),
+              itemBuilder: (context, i) {
+                final item = _popularRepairs[i];
+                return Container(
+                  width: 220,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFD1D9D6)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Card Top Header
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF003A26).withValues(alpha: 0.04),
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF003A26),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                item['badge'] as String,
+                                style: const TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFFEDB000),
+                                ),
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                const Icon(Icons.star_rounded, color: Color(0xFFEDB000), size: 14),
+                                const SizedBox(width: 2),
+                                Text(
+                                  '${item['rating']} (${item['reviews']})',
+                                  style: const TextStyle(fontFamily: 'Inter', fontSize: 10.5, fontWeight: FontWeight.w700, color: Color(0xFF003A26)),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Device Image / Icon Area
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF3F6F4),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: Text(item['icon'] as String, style: const TextStyle(fontSize: 22)),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item['device'] as String,
+                                    style: const TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontSize: 13.5,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF003A26),
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    item['service'] as String,
+                                    style: const TextStyle(fontFamily: 'Inter', fontSize: 11, color: Color(0xFF5F6F67)),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: Text(
+                          item['part'] as String,
+                          style: const TextStyle(fontFamily: 'Inter', fontSize: 10.5, fontStyle: FontStyle.italic, color: Color(0xFF5F6F67)),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const Spacer(),
+                      const Divider(height: 1, color: Color(0xFFE8ECEA)),
+                      // Pricing & Action Row
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(14, 8, 14, 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      item['price'] as String,
+                                      style: const TextStyle(
+                                        fontFamily: 'Inter',
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w900,
+                                        color: Color(0xFF003A26),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      item['mrp'] as String,
+                                      style: const TextStyle(
+                                        fontFamily: 'Inter',
+                                        fontSize: 10.5,
+                                        color: Color(0xFF5F6F67),
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  item['discount'] as String,
+                                  style: const TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 9.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF10B981),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            QFPressable(
+                              onTap: () => context.push('/select-brand'),
+                              pressedScale: 0.94,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF003A26),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Text(
+                                  'Book Fix',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Showcase the QuickFix Customer Mobile App & 12-Stage Visual Live Tracker
+  Widget _buildMobileAppTrackerShowcase() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 26, 20, 0),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF003A26), Color(0xFF1F2D27)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF003A26).withValues(alpha: 0.3),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEDB000),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Text(
+                  'LIVE APP TRACKER',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 9,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF003A26),
+                    letterSpacing: 0.6,
+                  ),
+                ),
+              ),
+              const Row(
+                children: [
+                  Icon(Icons.shield_outlined, color: Color(0xFFEDB000), size: 14),
+                  SizedBox(width: 4),
+                  Text(
+                    '₹50,000 Transit Insurance',
+                    style: TextStyle(fontFamily: 'Inter', fontSize: 10.5, fontWeight: FontWeight.w700, color: Color(0xFFEDB000)),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Track Every Second of Your Repair',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Follow all 12 stages live—from doorstep collection to cleanroom diagnostics, OEM installation, and return delivery.',
+            style: TextStyle(fontFamily: 'Inter', fontSize: 12, color: Colors.white70, height: 1.35),
+          ),
+          const SizedBox(height: 16),
+          // Interactive mock tracker pill
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+            ),
+            child: Row(
+              children: [
+                AnimatedBuilder(
+                  animation: _radarController,
+                  builder: (_, __) {
+                    return Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF10B981).withValues(alpha: 0.8),
+                            blurRadius: 6 * _radarController.value,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(width: 10),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Stage 3 of 12 • In Transit to Main Lab',
+                        style: TextStyle(fontFamily: 'Inter', fontSize: 12, fontWeight: FontWeight.w800, color: Colors.white),
+                      ),
+                      Text(
+                        'Assigned executive: Ramesh Verma (4.9 ★) in Indiranagar',
+                        style: TextStyle(fontFamily: 'Inter', fontSize: 10.5, color: Colors.white60),
+                      ),
+                    ],
+                  ),
+                ),
+                QFPressable(
+                  onTap: () => context.push('/track-repair/QF-89421'),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEDB000),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      'View Live',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF003A26),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -1565,7 +2277,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             );
           }),
           const SizedBox(height: 14),
-          // Large bottom booking button with QFPressable
           QFPressable(
             onTap: () => context.push('/select-brand'),
             pressedScale: 0.96,
