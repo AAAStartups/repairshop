@@ -12,9 +12,10 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStateMixin {
-  // Hero Carousel Page Controller and Timer
-  final PageController _heroController = PageController();
-  int _currentHeroPage = 0;
+  // Infinite Hero Carousel Controller & Timer
+  static const int _virtualPageBase = 300;
+  late final PageController _heroController;
+  int _currentHeroIndex = 0;
   Timer? _heroTimer;
   bool _isUserInteracting = false;
 
@@ -42,84 +43,88 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     "Search Apple Watch touch glass...",
   ];
 
-  // 3 Hero Carousel slides
+  // 3 Hero Carousel slides with user-requested copy & detailed artwork
   final List<Map<String, dynamic>> _heroSlides = [
     {
-      'title': 'Trusted Repairs.\nZero Hassle.',
-      'step1': 'Free Doorstep',
-      'step2': 'OEM Grade',
-      'step3': '6-Mo Warranty',
-      'cta': 'Book Now',
-      'bgGradient': [Color(0xFF022B1B), Color(0xFF003A26)],
-      'icon': Icons.build_circle_rounded,
-    },
-    {
-      'title': 'Instant Display\nReplacement.',
-      'step1': '60-Min Fix',
+      'headline': 'Instant Display\nReplacement.',
+      'sub': 'Fast, reliable doorstep screen replacement.',
+      'step1': '45-Min Fix',
       'step2': 'Tested Glass',
       'step3': 'Free Pickup',
       'cta': 'Claim Offer',
-      'bgGradient': [Color(0xFF09281C), Color(0xFF05452D)],
-      'icon': Icons.screenshot_monitor_rounded,
+      'type': 'display',
+      'gradient': [Color(0xFF012718), Color(0xFF003D28), Color(0xFF065237)],
     },
     {
-      'title': 'High-Health\nBattery Swap.',
+      'headline': 'Battery Running\nLow?',
+      'sub': 'Get your battery replaced by certified experts.',
       'step1': '100% Health',
       'step2': 'Genuine Cells',
-      'step3': 'Express Fit',
-      'cta': 'Get Battery',
-      'bgGradient': [Color(0xFF0A2218), Color(0xFF0E4A32)],
-      'icon': Icons.battery_charging_full_rounded,
+      'step3': '30-Min Swap',
+      'cta': 'Swap Battery',
+      'type': 'battery',
+      'gradient': [Color(0xFF062316), Color(0xFF0A3C28), Color(0xFF094E34)],
+    },
+    {
+      'headline': 'Your Device Deserves\nExpert Care.',
+      'sub': 'Professional repairs. Trusted technicians.',
+      'step1': 'Doorstep Tech',
+      'step2': 'Data Safe',
+      'step3': '6-Mo Warranty',
+      'cta': 'Book Repair',
+      'type': 'expert',
+      'gradient': [Color(0xFF031E13), Color(0xFF023623), Color(0xFF0C4D34)],
     },
   ];
 
-  // Popular Services Cards (Crazy Finds style from Circle reference)
+  // Popular Services Cards (Matching Circle Store horizontal card architecture)
   final List<Map<String, dynamic>> _popularServices = [
     {
       'title': 'Screen Replacement',
-      'category': 'Smartphones',
+      'sub': 'Original OEM grade glass',
       'badge': 'OEM Grade',
       'price': '₹1,499',
       'mrp': '₹2,999',
       'discount': '50% OFF',
-      'icon': Icons.phone_iphone_rounded,
-      'gradient': [Color(0xFF003A26), Color(0xFF075439)],
+      'type': 'screen',
+      'gradient': [Color(0xFF003020), Color(0xFF08563A)],
     },
     {
       'title': 'Battery Replacement',
-      'category': 'Smartphones & Laptops',
+      'sub': 'Restore 100% health & backup',
       'badge': 'Original Part',
       'price': '₹999',
       'mrp': '₹1,999',
       'discount': '50% OFF',
-      'icon': Icons.battery_charging_full_rounded,
-      'gradient': [Color(0xFF1B3B2B), Color(0xFF0A4E31)],
+      'type': 'battery',
+      'gradient': [Color(0xFF0A3322), Color(0xFF0F5A3B)],
     },
     {
-      'title': 'Water Damage Clean',
-      'category': 'All Devices',
+      'title': 'Water Damage Repair',
+      'sub': 'Deep ultrasonic diagnostics',
       'badge': 'Express 60m',
       'price': '₹799',
       'mrp': '₹1,499',
       'discount': '46% OFF',
-      'icon': Icons.water_drop_rounded,
-      'gradient': [Color(0xFF083120), Color(0xFF0F5A39)],
+      'type': 'water',
+      'gradient': [Color(0xFF042D1E), Color(0xFF095035)],
     },
     {
-      'title': 'Charging Port Fix',
-      'category': 'Tablets & Phones',
+      'title': 'Charging Port Repair',
+      'sub': 'Type-C & Lightning pin fix',
       'badge': 'OEM Grade',
       'price': '₹699',
       'mrp': '₹1,299',
       'discount': '46% OFF',
-      'icon': Icons.electrical_services_rounded,
-      'gradient': [Color(0xFF153424), Color(0xFF04482B)],
+      'type': 'port',
+      'gradient': [Color(0xFF0E3826), Color(0xFF054C30)],
     },
   ];
 
   @override
   void initState() {
     super.initState();
+    _heroController = PageController(initialPage: _virtualPageBase);
     _startHeroAutoSlide();
     _startSearchPlaceholderCycle();
   }
@@ -128,10 +133,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     _heroTimer?.cancel();
     _heroTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
       if (!_isUserInteracting && _heroController.hasClients) {
-        final nextPage = (_currentHeroPage + 1) % _heroSlides.length;
-        _heroController.animateToPage(
-          nextPage,
-          duration: const Duration(milliseconds: 600),
+        _heroController.nextPage(
+          duration: const Duration(milliseconds: 650),
           curve: Curves.easeInOutCubic,
         );
       }
@@ -284,6 +287,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    // Note: Exactly ONE bottom navigation bar is managed by MainShell.
+    // HomeScreen contains the scrollable content with the sticky location banner pinned at the bottom.
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -291,7 +296,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           // Main Scrollable Screen
           Positioned.fill(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 84), // Space so bottom cards scroll past sticky location banner
+              padding: const EdgeInsets.only(bottom: 84), // Clearance for sticky location banner
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -303,7 +309,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             ),
           ),
 
-          // Sticky Location Banner (Floating above bottom navigation)
+          // Sticky Location Banner (Positioned directly above MainShell's bottom navigation bar)
           Positioned(
             left: 0,
             right: 0,
@@ -316,7 +322,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
 
   // ==========================================
-  // 1. CIRCLE HEADER + CATEGORIES + HERO
+  // 1. HEADER REFINEMENT (Pixel-accurate to Circle)
   // ==========================================
   Widget _buildCircleHeaderSection() {
     final topPadding = MediaQuery.of(context).padding.top;
@@ -330,23 +336,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           colors: [
             Color(0xFF001B11),
             Color(0xFF003A26),
-            Color(0xFF002A1C),
+            Color(0xFF002719),
           ],
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: topPadding + 8),
+          SizedBox(height: topPadding + 10),
 
           // --- Top Row: Logo + PRO Badge (Left) & Sign In Pill (Right) ---
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // QuickFix Logo & PRO badge
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     RichText(
                       text: const TextSpan(
@@ -355,7 +363,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                             text: 'quick',
                             style: TextStyle(
                               fontFamily: 'Inter',
-                              fontSize: 28,
+                              fontSize: 27,
                               fontWeight: FontWeight.w900,
                               color: Colors.white,
                               letterSpacing: -0.8,
@@ -365,7 +373,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                             text: 'fix',
                             style: TextStyle(
                               fontFamily: 'Inter',
-                              fontSize: 28,
+                              fontSize: 27,
                               fontWeight: FontWeight.w900,
                               color: Color(0xFFEDB000),
                               letterSpacing: -0.8,
@@ -376,7 +384,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
                       decoration: BoxDecoration(
                         color: const Color(0xFFEDB000).withValues(alpha: 0.15),
                         border: Border.all(color: const Color(0xFFEDB000), width: 1.2),
@@ -386,7 +394,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                         'PRO',
                         style: TextStyle(
                           fontFamily: 'Inter',
-                          fontSize: 10,
+                          fontSize: 9.5,
                           fontWeight: FontWeight.w900,
                           color: Color(0xFFEDB000),
                           letterSpacing: 0.5,
@@ -403,7 +411,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.8), width: 1.2),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.85), width: 1.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Row(
@@ -473,7 +481,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.25),
+                      color: Colors.black.withValues(alpha: 0.22),
                       blurRadius: 14,
                       offset: const Offset(0, 4),
                     ),
@@ -561,7 +569,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   Icon(
                     cat['icon'] as IconData,
                     color: isSelected ? Colors.white : Colors.white60,
-                    size: 26,
+                    size: 25,
                   ),
                   const SizedBox(height: 6),
                   Text(
@@ -596,7 +604,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
 
   // ==========================================
-  // 3. HERO CAROUSEL (3 Pages, Auto-slide, Gesture Pause)
+  // 3. HERO CAROUSEL (Infinite Looping & Professional Artwork)
   // ==========================================
   Widget _buildHeroCarousel() {
     return Column(
@@ -605,21 +613,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           height: 195,
           child: NotificationListener<UserScrollNotification>(
             onNotification: (notification) {
-              // Pause auto-sliding while user is actively swiping
               _isUserInteracting = notification.direction.name != 'idle';
               return false;
             },
             child: PageView.builder(
               controller: _heroController,
-              itemCount: _heroSlides.length,
               physics: const BouncingScrollPhysics(),
-              onPageChanged: (index) {
+              onPageChanged: (virtualIndex) {
                 setState(() {
-                  _currentHeroPage = index;
+                  _currentHeroIndex = virtualIndex % _heroSlides.length;
                 });
               },
-              itemBuilder: (context, index) {
-                final slide = _heroSlides[index];
+              itemBuilder: (context, virtualIndex) {
+                final slideIndex = virtualIndex % _heroSlides.length;
+                final slide = _heroSlides[slideIndex];
+
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Container(
@@ -628,7 +636,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: slide['bgGradient'] as List<Color>,
+                        colors: slide['gradient'] as List<Color>,
                       ),
                       boxShadow: [
                         BoxShadow(
@@ -641,21 +649,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     clipBehavior: Clip.antiAlias,
                     child: Stack(
                       children: [
-                        // Soft ambient glowing background sphere
+                        // Layered ambient radial illumination
                         Positioned(
-                          right: -30,
-                          top: -30,
+                          right: -20,
+                          top: -20,
                           child: Container(
-                            width: 170,
-                            height: 170,
+                            width: 180,
+                            height: 180,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: const Color(0xFFEDB000).withValues(alpha: 0.12),
+                              gradient: RadialGradient(
+                                colors: [
+                                  const Color(0xFFEDB000).withValues(alpha: 0.16),
+                                  Colors.transparent,
+                                ],
+                              ),
                             ),
                           ),
                         ),
 
-                        // Content Row: Text & Process on Left, Illustration on Right
+                        // Content Row: Text & Process on Left, Studio Artwork on Right
                         Padding(
                           padding: const EdgeInsets.fromLTRB(18, 16, 14, 16),
                           child: Row(
@@ -667,9 +680,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    // Headline (exact Circle typography)
+                                    // Headline
                                     Text(
-                                      slide['title'] as String,
+                                      slide['headline'] as String,
                                       style: const TextStyle(
                                         fontFamily: 'Inter',
                                         fontSize: 20,
@@ -679,12 +692,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                         letterSpacing: -0.4,
                                       ),
                                     ),
-                                    const SizedBox(height: 10),
+                                    const SizedBox(height: 6),
 
-                                    // 3-Stage Process Flow (Picked Up -> Verified -> Delivered)
+                                    // Subtitle
+                                    Text(
+                                      slide['sub'] as String,
+                                      style: TextStyle(
+                                        fontFamily: 'Inter',
+                                        fontSize: 10.5,
+                                        color: Colors.white.withValues(alpha: 0.8),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 8),
+
+                                    // 3-Stage Process Flow
                                     Row(
                                       children: [
-                                        _buildMiniFlowStep(Icons.person_pin_circle_rounded, slide['step1'] as String),
+                                        _buildMiniFlowStep(Icons.check_circle_outline_rounded, slide['step1'] as String),
                                         const Padding(
                                           padding: EdgeInsets.symmetric(horizontal: 4),
                                           child: Text('➔', style: TextStyle(color: Colors.white38, fontSize: 9)),
@@ -698,7 +725,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                       ],
                                     ),
 
-                                    const SizedBox(height: 12),
+                                    const SizedBox(height: 10),
 
                                     // CTA Pill Button
                                     QFPressable(
@@ -711,7 +738,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                           borderRadius: BorderRadius.circular(16),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: const Color(0xFFEDB000).withValues(alpha: 0.4),
+                                              color: const Color(0xFFEDB000).withValues(alpha: 0.35),
                                               blurRadius: 8,
                                               offset: const Offset(0, 3),
                                             ),
@@ -724,13 +751,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                               slide['cta'] as String,
                                               style: const TextStyle(
                                                 fontFamily: 'Inter',
-                                                fontSize: 12,
+                                                fontSize: 11.5,
                                                 fontWeight: FontWeight.w900,
                                                 color: Color(0xFF003A26),
                                               ),
                                             ),
                                             const SizedBox(width: 4),
-                                            const Icon(Icons.arrow_forward_rounded, size: 13, color: Color(0xFF003A26)),
+                                            const Icon(Icons.arrow_forward_rounded, size: 12, color: Color(0xFF003A26)),
                                           ],
                                         ),
                                       ),
@@ -739,28 +766,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                 ),
                               ),
 
-                              // Right Graphic Illustration
+                              // Right Studio Artwork (Professional composite)
                               Expanded(
                                 flex: 4,
                                 child: Center(
-                                  child: Container(
-                                    width: 84,
-                                    height: 84,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: RadialGradient(
-                                        colors: [
-                                          const Color(0xFFEDB000).withValues(alpha: 0.25),
-                                          Colors.transparent,
-                                        ],
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      slide['icon'] as IconData,
-                                      size: 54,
-                                      color: const Color(0xFFEDB000),
-                                    ),
-                                  ),
+                                  child: _buildHeroArtwork(slide['type'] as String),
                                 ),
                               ),
                             ],
@@ -781,7 +791,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(_heroSlides.length, (index) {
-            final isSelected = index == _currentHeroPage;
+            final isSelected = index == _currentHeroIndex;
             return AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeOutCubic,
@@ -797,6 +807,246 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         ),
       ],
     );
+  }
+
+  // Multi-layered studio illustrations replacing basic flat icons
+  Widget _buildHeroArtwork(String type) {
+    if (type == 'display') {
+      return SizedBox(
+        width: 100,
+        height: 115,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Smartphone frame with glowing OLED gradient
+            Container(
+              width: 58,
+              height: 98,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.white70, width: 2),
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF0C4D34), Color(0xFF136A49)],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFEDB000).withValues(alpha: 0.25),
+                    blurRadius: 14,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 20,
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Icon(Icons.bolt_rounded, color: Color(0xFFEDB000), size: 28),
+                  const SizedBox(height: 16),
+                  Container(
+                    width: 14,
+                    height: 14,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white54, width: 1.5),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Tilted precision screwdriver tool
+            Positioned(
+              right: 2,
+              top: 6,
+              child: Transform.rotate(
+                angle: 0.5,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEDB000),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.build_rounded, size: 16, color: Color(0xFF003A26)),
+                ),
+              ),
+            ),
+            // OEM badge pill
+            Positioned(
+              left: 0,
+              bottom: 12,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8F5E9),
+                  borderRadius: BorderRadius.circular(6),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 4,
+                    ),
+                  ],
+                ),
+                child: const Text(
+                  'OEM GRADE',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 8,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF003A26),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else if (type == 'battery') {
+      return SizedBox(
+        width: 100,
+        height: 115,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Lithium battery cell representation
+            Container(
+              width: 54,
+              height: 92,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFEDB000), width: 1.8),
+                color: const Color(0xFF0A2B1D),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFEDB000).withValues(alpha: 0.2),
+                    blurRadius: 12,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Top battery positive contact tab
+                  Container(
+                    width: 22,
+                    height: 5,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFEDB000),
+                      borderRadius: BorderRadius.vertical(bottom: Radius.circular(3)),
+                    ),
+                  ),
+                  const Column(
+                    children: [
+                      Icon(Icons.battery_charging_full_rounded, color: Color(0xFFEDB000), size: 36),
+                      Text(
+                        '100%',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Bottom ground tab
+                  Container(
+                    width: 32,
+                    height: 3,
+                    color: Colors.white30,
+                  ),
+                ],
+              ),
+            ),
+            // Certified verification check chip
+            Positioned(
+              right: 0,
+              bottom: 14,
+              child: Container(
+                padding: const EdgeInsets.all(5),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF8CE338),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.check_rounded, color: Color(0xFF003A26), size: 14),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // Expert care composite
+      return SizedBox(
+        width: 100,
+        height: 115,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Laptop & Phone backplate
+            Container(
+              width: 76,
+              height: 52,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.white60, width: 1.5),
+                color: const Color(0xFF093120),
+              ),
+              child: const Center(
+                child: Icon(Icons.laptop_mac_rounded, color: Colors.white70, size: 28),
+              ),
+            ),
+            // Shield of authenticity
+            Positioned(
+              bottom: 10,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEDB000),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      blurRadius: 6,
+                    ),
+                  ],
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.shield_rounded, size: 14, color: Color(0xFF003A26)),
+                    SizedBox(width: 4),
+                    Text(
+                      'CERTIFIED',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 9,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF003A26),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   Widget _buildMiniFlowStep(IconData icon, String label) {
@@ -855,7 +1105,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     ),
                     SizedBox(height: 2),
                     Text(
-                      'Blink and you\'ll miss it • 6-Month Warranty',
+                      'Expert care for your devices',
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 13,
@@ -886,7 +1136,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
           // Horizontal List of Large Image Cards (Circle Store layout)
           SizedBox(
-            height: 250,
+            height: 255,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
@@ -908,7 +1158,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       onTap: () => context.push('/select-brand'),
       pressedScale: 0.96,
       child: Container(
-        width: 170,
+        width: 175,
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -926,11 +1176,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top Image Area with Badge & Favorite Heart
+            // Top Image Area with Realistic Graphic & Heart
             Stack(
               children: [
                 Container(
-                  height: 125,
+                  height: 130,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -940,11 +1190,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     ),
                   ),
                   child: Center(
-                    child: Icon(
-                      svc['icon'] as IconData,
-                      size: 52,
-                      color: const Color(0xFFEDB000),
-                    ),
+                    child: _buildServiceCardArtwork(svc['type'] as String),
                   ),
                 ),
 
@@ -1001,7 +1247,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     svc['title'] as String,
                     style: const TextStyle(
                       fontFamily: 'Inter',
-                      fontSize: 13,
+                      fontSize: 13.5,
                       fontWeight: FontWeight.w800,
                       color: Color(0xFF1F2D27),
                     ),
@@ -1010,7 +1256,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    svc['category'] as String,
+                    svc['sub'] as String,
                     style: const TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 11,
@@ -1069,6 +1315,70 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         ),
       ),
     );
+  }
+
+  Widget _buildServiceCardArtwork(String type) {
+    if (type == 'screen') {
+      return Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: 50,
+            height: 75,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.white60, width: 1.5),
+              color: const Color(0xFF063321),
+            ),
+            child: const Center(
+              child: Icon(Icons.smartphone_rounded, color: Color(0xFFEDB000), size: 30),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Icon(Icons.handyman_rounded, color: Colors.white.withValues(alpha: 0.7), size: 20),
+          ),
+        ],
+      );
+    } else if (type == 'battery') {
+      return Container(
+        width: 44,
+        height: 65,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFFEDB000), width: 1.5),
+          color: const Color(0xFF0A2B1D),
+        ),
+        child: const Center(
+          child: Icon(Icons.battery_charging_full_rounded, color: Color(0xFFEDB000), size: 32),
+        ),
+      );
+    } else if (type == 'water') {
+      return Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: const Color(0xFFEDB000).withValues(alpha: 0.15),
+        ),
+        child: const Center(
+          child: Icon(Icons.water_drop_rounded, color: Color(0xFFEDB000), size: 36),
+        ),
+      );
+    } else {
+      return Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: const Color(0xFFEDB000).withValues(alpha: 0.15),
+        ),
+        child: const Center(
+          child: Icon(Icons.electrical_services_rounded, color: Color(0xFFEDB000), size: 34),
+        ),
+      );
+    }
   }
 
   // ==========================================
