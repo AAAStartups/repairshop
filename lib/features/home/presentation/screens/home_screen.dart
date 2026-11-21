@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/widgets/qf_pressable.dart';
+import '../../../../core/widgets/qf_animated_pulse.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -43,7 +45,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     "Search Apple Watch touch glass...",
   ];
 
-  // 3 Hero Carousel slides with user-requested copy & detailed artwork
+  // Favorite items state for service cards
+  final Set<String> _favoriteServices = {};
+
+  // 3 Hero Carousel slides with user-requested copy & detailed 2.5D artwork
   final List<Map<String, dynamic>> _heroSlides = [
     {
       'headline': 'Instant Display\nReplacement.',
@@ -53,7 +58,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       'step3': 'Free Pickup',
       'cta': 'Claim Offer',
       'type': 'display',
-      'gradient': [Color(0xFF012718), Color(0xFF003D28), Color(0xFF065237)],
+      'gradient': [Color(0xFF012014), Color(0xFF003824), Color(0xFF075438)],
     },
     {
       'headline': 'Battery Running\nLow?',
@@ -63,7 +68,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       'step3': '30-Min Swap',
       'cta': 'Swap Battery',
       'type': 'battery',
-      'gradient': [Color(0xFF062316), Color(0xFF0A3C28), Color(0xFF094E34)],
+      'gradient': [Color(0xFF041F14), Color(0xFF093926), Color(0xFF0B4E34)],
     },
     {
       'headline': 'Your Device Deserves\nExpert Care.',
@@ -73,49 +78,57 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       'step3': '6-Mo Warranty',
       'cta': 'Book Repair',
       'type': 'expert',
-      'gradient': [Color(0xFF031E13), Color(0xFF023623), Color(0xFF0C4D34)],
+      'gradient': [Color(0xFF021B11), Color(0xFF003422), Color(0xFF0D5036)],
     },
   ];
 
   // Popular Services Cards (Matching Circle Store horizontal card architecture)
   final List<Map<String, dynamic>> _popularServices = [
     {
+      'id': 'screen_replace',
       'title': 'Screen Replacement',
       'sub': 'Original OEM grade glass',
       'badge': 'OEM Grade',
       'price': '₹1,499',
       'mrp': '₹2,999',
       'discount': '50% OFF',
+      'rating': '4.9 ★ (1.4k)',
       'type': 'screen',
       'gradient': [Color(0xFF003020), Color(0xFF08563A)],
     },
     {
+      'id': 'battery_replace',
       'title': 'Battery Replacement',
       'sub': 'Restore 100% health & backup',
       'badge': 'Original Part',
       'price': '₹999',
       'mrp': '₹1,999',
       'discount': '50% OFF',
+      'rating': '4.8 ★ (980)',
       'type': 'battery',
       'gradient': [Color(0xFF0A3322), Color(0xFF0F5A3B)],
     },
     {
+      'id': 'water_damage',
       'title': 'Water Damage Repair',
       'sub': 'Deep ultrasonic diagnostics',
       'badge': 'Express 60m',
       'price': '₹799',
       'mrp': '₹1,499',
       'discount': '46% OFF',
+      'rating': '4.9 ★ (720)',
       'type': 'water',
       'gradient': [Color(0xFF042D1E), Color(0xFF095035)],
     },
     {
-      'title': 'Charging Port Repair',
+      'id': 'charging_port',
+      'title': 'Charging Port Fix',
       'sub': 'Type-C & Lightning pin fix',
       'badge': 'OEM Grade',
       'price': '₹699',
       'mrp': '₹1,299',
       'discount': '46% OFF',
+      'rating': '4.7 ★ (610)',
       'type': 'port',
       'gradient': [Color(0xFF0E3826), Color(0xFF054C30)],
     },
@@ -161,6 +174,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
 
   void _showLocationModal() {
+    HapticFeedback.lightImpact();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -227,6 +241,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 final isCur = loc['area'] == _selectedLocation;
                 return QFPressable(
                   onTap: () {
+                    HapticFeedback.lightImpact();
                     setState(() {
                       _selectedLocation = loc['area'] as String;
                     });
@@ -287,8 +302,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    // Note: Exactly ONE bottom navigation bar is managed by MainShell.
-    // HomeScreen contains the scrollable content with the sticky location banner pinned at the bottom.
+    // Exactly ONE bottom navigation bar is handled by MainShell.
+    // HomeScreen contains the scrollable feed and the sticky location banner.
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -296,7 +311,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           // Main Scrollable Screen
           Positioned.fill(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 84), // Clearance for sticky location banner
+              padding: const EdgeInsets.only(bottom: 86), // Clearance for sticky location banner
               physics: const BouncingScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -309,7 +324,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             ),
           ),
 
-          // Sticky Location Banner (Positioned directly above MainShell's bottom navigation bar)
+          // Sticky Location Banner (Floating above bottom navigation)
           Positioned(
             left: 0,
             right: 0,
@@ -322,7 +337,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
 
   // ==========================================
-  // 1. HEADER REFINEMENT (Pixel-accurate to Circle)
+  // 1. HEADER REFINEMENT (Atmospheric lighting & balance)
   // ==========================================
   Widget _buildCircleHeaderSection() {
     final topPadding = MediaQuery.of(context).padding.top;
@@ -334,206 +349,264 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color(0xFF001B11),
+            Color(0xFF00150D),
             Color(0xFF003A26),
             Color(0xFF002719),
           ],
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          SizedBox(height: topPadding + 10),
+          // Ambient luxury lighting radial glow in the top-right corner
+          Positioned(
+            right: -30,
+            top: -20,
+            child: Container(
+              width: 220,
+              height: 220,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFF0F6443).withValues(alpha: 0.5),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
 
-          // --- Top Row: Logo + PRO Badge (Left) & Sign In Pill (Right) ---
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // QuickFix Logo & PRO badge
-                Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: topPadding + 10),
+
+              // --- Top Row: QuickFix Logo & PRO Badge (Left) & Sign In Pill (Right) ---
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    RichText(
-                      text: const TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'quick',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 27,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
-                              letterSpacing: -0.8,
-                            ),
+                    // Brand Logo + PRO badge
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        RichText(
+                          text: const TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'quick',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 27,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                  letterSpacing: -0.9,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'fix',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 27,
+                                  fontWeight: FontWeight.w900,
+                                  color: Color(0xFFEDB000),
+                                  letterSpacing: -0.9,
+                                ),
+                              ),
+                            ],
                           ),
-                          TextSpan(
-                            text: 'fix',
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6.5, vertical: 2.5),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEDB000).withValues(alpha: 0.15),
+                            border: Border.all(color: const Color(0xFFEDB000), width: 1.2),
+                            borderRadius: BorderRadius.circular(6),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFEDB000).withValues(alpha: 0.2),
+                                blurRadius: 6,
+                              ),
+                            ],
+                          ),
+                          child: const Text(
+                            'PRO',
                             style: TextStyle(
                               fontFamily: 'Inter',
-                              fontSize: 27,
+                              fontSize: 9.5,
                               fontWeight: FontWeight.w900,
                               color: Color(0xFFEDB000),
-                              letterSpacing: -0.8,
+                              letterSpacing: 0.5,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEDB000).withValues(alpha: 0.15),
-                        border: Border.all(color: const Color(0xFFEDB000), width: 1.2),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Text(
-                        'PRO',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 9.5,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFFEDB000),
-                          letterSpacing: 0.5,
+
+                    // Sign In Outline Pill Button (Exact Circle match)
+                    QFPressable(
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        context.push('/auth/login');
+                      },
+                      pressedScale: 0.95,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7.5),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.05),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.85), width: 1.2),
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.login_rounded, color: Colors.white, size: 16),
+                            SizedBox(width: 6),
+                            Text(
+                              'Sign in',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ],
                 ),
+              ),
 
-                // Sign In Outline Pill Button (Exact match to Circle reference)
-                QFPressable(
-                  onTap: () => context.push('/auth/login'),
-                  pressedScale: 0.95,
+              const SizedBox(height: 8),
+
+              // --- Location Selector Row with Active Tech Count ---
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: QFPressable(
+                  onTap: _showLocationModal,
+                  pressedScale: 0.98,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.location_on_rounded, size: 14, color: Color(0xFFEDB000)),
+                      const SizedBox(width: 4),
+                      Text(
+                        _selectedLocation,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      const Icon(Icons.arrow_drop_down_rounded, color: Colors.white, size: 18),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // --- Large White Stadium Search Bar ---
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: QFPressable(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    context.push('/select-brand');
+                  },
+                  pressedScale: 0.99,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                    height: 52,
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.85), width: 1.2),
-                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.22),
+                          blurRadius: 16,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
                     ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
+                    child: Row(
                       children: [
-                        Icon(Icons.login_rounded, color: Colors.white, size: 16),
-                        SizedBox(width: 6),
-                        Text(
-                          'Sign in',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
+                        const Icon(Icons.search_rounded, color: Color(0xFF003A26), size: 24),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 350),
+                            transitionBuilder: (child, animation) => FadeTransition(
+                              opacity: animation,
+                              child: SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(0.0, 0.3),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: child,
+                              ),
+                            ),
+                            child: Text(
+                              _searchPlaceholders[_searchPlaceholderIndex],
+                              key: ValueKey<int>(_searchPlaceholderIndex),
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 13.5,
+                                color: Colors.grey.shade600,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF003A26).withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Row(
+                            children: [
+                              Text(
+                                'Explore',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF003A26),
+                                ),
+                              ),
+                              SizedBox(width: 2),
+                              Icon(Icons.chevron_right_rounded, size: 14, color: Color(0xFF003A26)),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          // --- Location Selector Row (Below Logo) ---
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: QFPressable(
-              onTap: _showLocationModal,
-              pressedScale: 0.98,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.location_on_rounded, size: 14, color: Color(0xFFEDB000)),
-                  const SizedBox(width: 4),
-                  Text(
-                    _selectedLocation,
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 2),
-                  const Icon(Icons.arrow_drop_down_rounded, color: Colors.white, size: 18),
-                ],
               ),
-            ),
+
+              const SizedBox(height: 20),
+
+              // --- 2. CATEGORY NAVIGATION (Icon Above Label, Animated Underline) ---
+              _buildCategoryNavigationRail(),
+
+              const SizedBox(height: 16),
+
+              // --- 3. HERO PROMOTIONAL CAROUSEL ---
+              _buildHeroCarousel(),
+
+              const SizedBox(height: 24),
+            ],
           ),
-
-          const SizedBox(height: 16),
-
-          // --- Large White Rounded Search Bar (Exact Circle Stadium Pill) ---
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: QFPressable(
-              onTap: () => context.push('/select-brand'),
-              pressedScale: 0.99,
-              child: Container(
-                height: 52,
-                padding: const EdgeInsets.symmetric(horizontal: 18),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.22),
-                      blurRadius: 14,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.search_rounded, color: Color(0xFF003A26), size: 24),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 350),
-                        transitionBuilder: (child, animation) => FadeTransition(
-                          opacity: animation,
-                          child: SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(0.0, 0.3),
-                              end: Offset.zero,
-                            ).animate(animation),
-                            child: child,
-                          ),
-                        ),
-                        child: Text(
-                          _searchPlaceholders[_searchPlaceholderIndex],
-                          key: ValueKey<int>(_searchPlaceholderIndex),
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // --- 2. CATEGORY NAVIGATION (Icon Above Label, Animated Underline) ---
-          _buildCategoryNavigationRail(),
-
-          const SizedBox(height: 16),
-
-          // --- 3. HERO PROMOTIONAL CAROUSEL ---
-          _buildHeroCarousel(),
-
-          const SizedBox(height: 24),
         ],
       ),
     );
@@ -556,6 +629,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
           return QFPressable(
             onTap: () {
+              HapticFeedback.lightImpact();
               setState(() {
                 _selectedCategoryIndex = index;
               });
@@ -604,7 +678,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
 
   // ==========================================
-  // 3. HERO CAROUSEL (Infinite Looping & Professional Artwork)
+  // 3. HERO CAROUSEL (Infinite Looping & 2.5D Studio Artwork)
   // ==========================================
   Widget _buildHeroCarousel() {
     return Column(
@@ -640,9 +714,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          blurRadius: 16,
-                          offset: const Offset(0, 6),
+                          color: Colors.black.withValues(alpha: 0.35),
+                          blurRadius: 18,
+                          offset: const Offset(0, 7),
                         ),
                       ],
                     ),
@@ -651,16 +725,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       children: [
                         // Layered ambient radial illumination
                         Positioned(
-                          right: -20,
-                          top: -20,
+                          right: -25,
+                          top: -25,
                           child: Container(
-                            width: 180,
-                            height: 180,
+                            width: 190,
+                            height: 190,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               gradient: RadialGradient(
                                 colors: [
-                                  const Color(0xFFEDB000).withValues(alpha: 0.16),
+                                  const Color(0xFFEDB000).withValues(alpha: 0.18),
                                   Colors.transparent,
                                 ],
                               ),
@@ -729,10 +803,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
                                     // CTA Pill Button
                                     QFPressable(
-                                      onTap: () => context.push('/select-brand'),
+                                      onTap: () {
+                                        HapticFeedback.lightImpact();
+                                        context.push('/select-brand');
+                                      },
                                       pressedScale: 0.95,
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7.5),
                                         decoration: BoxDecoration(
                                           color: const Color(0xFFEDB000),
                                           borderRadius: BorderRadius.circular(16),
@@ -766,7 +843,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                 ),
                               ),
 
-                              // Right Studio Artwork (Professional composite)
+                              // Right Studio Artwork (Layered 2.5D graphics)
                               Expanded(
                                 flex: 4,
                                 child: Center(
@@ -1116,7 +1193,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   ],
                 ),
                 QFPressable(
-                  onTap: () => context.push('/select-brand'),
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    context.push('/select-brand');
+                  },
                   pressedScale: 0.95,
                   child: const Text(
                     'See All',
@@ -1136,7 +1216,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
           // Horizontal List of Large Image Cards (Circle Store layout)
           SizedBox(
-            height: 255,
+            height: 260,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
@@ -1154,8 +1234,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
 
   Widget _buildServiceCard(Map<String, dynamic> svc) {
+    final svcId = svc['id'] as String;
+    final isFavorite = _favoriteServices.contains(svcId);
+
     return QFPressable(
-      onTap: () => context.push('/select-brand'),
+      onTap: () {
+        HapticFeedback.lightImpact();
+        context.push('/select-brand');
+      },
       pressedScale: 0.96,
       child: Container(
         width: 175,
@@ -1167,8 +1253,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              blurRadius: 12,
+              offset: const Offset(0, 5),
             ),
           ],
         ),
@@ -1194,7 +1280,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   ),
                 ),
 
-                // Top-Left Badge (Lightly Used style -> OEM Grade)
+                // Top-Left Badge (OEM Grade)
                 Positioned(
                   top: 10,
                   left: 10,
@@ -1216,21 +1302,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   ),
                 ),
 
-                // Top-Right Favorite Heart Icon
+                // Top-Right Favorite Heart Icon with interactive state
                 Positioned(
                   top: 10,
                   right: 10,
-                  child: Container(
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.black.withValues(alpha: 0.25),
-                    ),
-                    child: const Icon(
-                      Icons.favorite_border_rounded,
-                      color: Colors.white,
-                      size: 16,
+                  child: GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      setState(() {
+                        if (isFavorite) {
+                          _favoriteServices.remove(svcId);
+                        } else {
+                          _favoriteServices.add(svcId);
+                        }
+                      });
+                    },
+                    child: Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black.withValues(alpha: 0.28),
+                      ),
+                      child: Icon(
+                        isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                        color: isFavorite ? const Color(0xFFEDB000) : Colors.white,
+                        size: 16,
+                      ),
                     ),
                   ),
                 ),
@@ -1243,16 +1341,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    svc['title'] as String,
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF1F2D27),
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          svc['title'] as String,
+                          style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF1F2D27),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -1265,7 +1370,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
+
+                  // Rating pill
+                  Row(
+                    children: [
+                      Text(
+                        svc['rating'] as String,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFFEDB000),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
 
                   // Price Row
                   Row(
@@ -1430,7 +1551,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
 
   // ==========================================
-  // 5. STICKY LOCATION BANNER (Exact Circle design)
+  // 5. STICKY LOCATION BANNER (With live radar beacon & frosted blur)
   // ==========================================
   Widget _buildStickyLocationBanner() {
     return Container(
@@ -1441,29 +1562,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 10,
+            blurRadius: 12,
             offset: const Offset(0, -3),
           ),
         ],
       ),
       child: Row(
         children: [
-          // Circular Location Icon
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(
-              color: Color(0xFFBCEB77), // Soft lime accent
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.location_on_rounded,
-              color: Color(0xFF003A26),
-              size: 20,
-            ),
+          // Circular Location Icon with Pulse Beacon
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              const QFAnimatedPulse(
+                size: 38,
+                color: Color(0xFF8CE338),
+              ),
+              Container(
+                width: 34,
+                height: 34,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFBCEB77), // Soft lime accent
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.location_on_rounded,
+                    color: Color(0xFF003A26),
+                    size: 19,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(width: 12),
 
-          // Title & Subtitle
+          // Title & Subtitle with active technician status
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1480,7 +1613,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'To check serviceability in your area',
+                  '14 Technicians ready • Check availability',
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 11,
