@@ -25,7 +25,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   int _selectedCategoryIndex = 0;
   final List<Map<String, dynamic>> _categories = [
     {'name': 'All', 'icon': Icons.grid_view_rounded},
-    {'name': 'Smartphones', 'icon': Icons.phone_iphone_rounded},
+    {'name': 'Phones', 'icon': Icons.phone_iphone_rounded},
     {'name': 'Laptops', 'icon': Icons.laptop_mac_rounded},
     {'name': 'Tablets', 'icon': Icons.tablet_mac_rounded},
     {'name': 'Accessories', 'icon': Icons.headphones_rounded},
@@ -38,17 +38,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   int _searchPlaceholderIndex = 0;
   Timer? _searchTimer;
   final List<String> _searchPlaceholders = [
-    "What's on your mind? Fix it!",
-    "Search iPhone 16 Pro display...",
-    "Search MacBook M2 battery swap...",
-    "Search Samsung S24 charging port...",
-    "Search Apple Watch touch glass...",
+    "What needs repair? Fix it!",
+    "Search iPhone 16 Pro display replacement...",
+    "Search MacBook M2 battery overhaul...",
+    "Search Samsung S24 charging port fix...",
+    "Search Apple Watch touch glass repair...",
   ];
 
   // Favorite items state for service cards
   final Set<String> _favoriteServices = {};
 
-  // 3 Hero Carousel slides with user-requested copy & detailed 2.5D artwork
+  // 3 Hero Carousel slides with user-requested copy & detailed artwork
   final List<Map<String, dynamic>> _heroSlides = [
     {
       'headline': 'Instant Display\nReplacement.',
@@ -58,7 +58,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       'step3': 'Free Pickup',
       'cta': 'Claim Offer',
       'type': 'display',
-      'gradient': [Color(0xFF012014), Color(0xFF003824), Color(0xFF075438)],
+      'gradient': [Color(0xFF07271B), Color(0xFF033F27), Color(0xFF075739)],
     },
     {
       'headline': 'Battery Running\nLow?',
@@ -68,7 +68,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       'step3': '30-Min Swap',
       'cta': 'Swap Battery',
       'type': 'battery',
-      'gradient': [Color(0xFF041F14), Color(0xFF093926), Color(0xFF0B4E34)],
+      'gradient': [Color(0xFF092218), Color(0xFF063A25), Color(0xFF0B4E33)],
     },
     {
       'headline': 'Your Device Deserves\nExpert Care.',
@@ -78,7 +78,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       'step3': '6-Mo Warranty',
       'cta': 'Book Repair',
       'type': 'expert',
-      'gradient': [Color(0xFF021B11), Color(0xFF003422), Color(0xFF0D5036)],
+      'gradient': [Color(0xFF052014), Color(0xFF043722), Color(0xFF0C5035)],
     },
   ];
 
@@ -137,7 +137,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   @override
   void initState() {
     super.initState();
-    _heroController = PageController(initialPage: _virtualPageBase);
+    // viewportFraction 1.0 ensures clean, full-width presentation without awkward side slivers
+    _heroController = PageController(initialPage: _virtualPageBase, viewportFraction: 1.0);
     _startHeroAutoSlide();
     _startSearchPlaceholderCycle();
   }
@@ -302,7 +303,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    // Exactly ONE bottom navigation bar is handled by MainShell.
+    // Exactly ONE bottom navigation bar is managed by MainShell.
     // HomeScreen contains the scrollable feed and the sticky location banner.
     return Scaffold(
       backgroundColor: Colors.white,
@@ -337,7 +338,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
 
   // ==========================================
-  // 1. HEADER REFINEMENT (Atmospheric lighting & balance)
+  // 1. HEADER REFINEMENT (Jet Black + Emerald Ambient Auras)
   // ==========================================
   Widget _buildCircleHeaderSection() {
     final topPadding = MediaQuery.of(context).padding.top;
@@ -345,22 +346,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF00150D),
-            Color(0xFF003A26),
-            Color(0xFF002719),
-          ],
-        ),
+        // Jet-Black / Dark Charcoal canvas creating high contrast like Circle reference
+        color: Color(0xFF080C0A),
       ),
       child: Stack(
         children: [
-          // Ambient luxury lighting radial glow in the top-right corner
+          // Top-Right Emerald Glow Aura (Organic lighting like Circle)
           Positioned(
-            right: -30,
-            top: -20,
+            right: -40,
+            top: -30,
+            child: Container(
+              width: 260,
+              height: 260,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFF00663D).withValues(alpha: 0.55),
+                    const Color(0xFF004026).withValues(alpha: 0.25),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Bottom-Left Subtle Forest Glow Aura
+          Positioned(
+            left: -50,
+            bottom: 40,
             child: Container(
               width: 220,
               height: 220,
@@ -368,7 +382,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xFF0F6443).withValues(alpha: 0.5),
+                    const Color(0xFF0A3E2A).withValues(alpha: 0.35),
                     Colors.transparent,
                   ],
                 ),
@@ -399,7 +413,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                 text: 'quick',
                                 style: TextStyle(
                                   fontFamily: 'Inter',
-                                  fontSize: 27,
+                                  fontSize: 28,
                                   fontWeight: FontWeight.w900,
                                   color: Colors.white,
                                   letterSpacing: -0.9,
@@ -409,7 +423,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                 text: 'fix',
                                 style: TextStyle(
                                   fontFamily: 'Inter',
-                                  fontSize: 27,
+                                  fontSize: 28,
                                   fontWeight: FontWeight.w900,
                                   color: Color(0xFFEDB000),
                                   letterSpacing: -0.9,
@@ -420,14 +434,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                         ),
                         const SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6.5, vertical: 2.5),
+                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
                           decoration: BoxDecoration(
                             color: const Color(0xFFEDB000).withValues(alpha: 0.15),
                             border: Border.all(color: const Color(0xFFEDB000), width: 1.2),
                             borderRadius: BorderRadius.circular(6),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFEDB000).withValues(alpha: 0.2),
+                                color: const Color(0xFFEDB000).withValues(alpha: 0.25),
                                 blurRadius: 6,
                               ),
                             ],
@@ -454,7 +468,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       },
                       pressedScale: 0.95,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7.5),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.05),
                           border: Border.all(color: Colors.white.withValues(alpha: 0.85), width: 1.2),
@@ -484,7 +498,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
               const SizedBox(height: 8),
 
-              // --- Location Selector Row with Active Tech Count ---
+              // --- Location Selector Row ---
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: QFPressable(
@@ -511,9 +525,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
-              // --- Large White Stadium Search Bar ---
+              // --- Large White Stadium Search Bar (Clean & Uncluttered like Circle) ---
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: QFPressable(
@@ -530,8 +544,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       borderRadius: BorderRadius.circular(30),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.22),
-                          blurRadius: 16,
+                          color: Colors.black.withValues(alpha: 0.35),
+                          blurRadius: 18,
                           offset: const Offset(0, 5),
                         ),
                       ],
@@ -558,34 +572,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                               key: ValueKey<int>(_searchPlaceholderIndex),
                               style: TextStyle(
                                 fontFamily: 'Inter',
-                                fontSize: 13.5,
-                                color: Colors.grey.shade600,
+                                fontSize: 14,
+                                color: Colors.grey.shade700,
                                 fontWeight: FontWeight.w500,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF003A26).withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Row(
-                            children: [
-                              Text(
-                                'Explore',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xFF003A26),
-                                ),
-                              ),
-                              SizedBox(width: 2),
-                              Icon(Icons.chevron_right_rounded, size: 14, color: Color(0xFF003A26)),
-                            ],
                           ),
                         ),
                       ],
@@ -594,7 +586,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 22),
 
               // --- 2. CATEGORY NAVIGATION (Icon Above Label, Animated Underline) ---
               _buildCategoryNavigationRail(),
@@ -642,7 +634,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 children: [
                   Icon(
                     cat['icon'] as IconData,
-                    color: isSelected ? Colors.white : Colors.white60,
+                    color: isSelected ? Colors.white : Colors.white54,
                     size: 25,
                   ),
                   const SizedBox(height: 6),
@@ -652,7 +644,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       fontFamily: 'Inter',
                       fontSize: 12,
                       fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                      color: isSelected ? Colors.white : Colors.white60,
+                      color: isSelected ? Colors.white : Colors.white54,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -661,8 +653,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 250),
                     curve: Curves.easeOutCubic,
-                    height: 3,
-                    width: isSelected ? 28 : 0,
+                    height: 2.5,
+                    width: isSelected ? 24 : 0,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(2),
@@ -678,7 +670,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
 
   // ==========================================
-  // 3. HERO CAROUSEL (Infinite Looping & 2.5D Studio Artwork)
+  // 3. HERO CAROUSEL (Full-Width Card, No Peeking Slivers)
   // ==========================================
   Widget _buildHeroCarousel() {
     return Column(
@@ -703,7 +695,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 final slide = _heroSlides[slideIndex];
 
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(22),
@@ -712,11 +704,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                         end: Alignment.bottomRight,
                         colors: slide['gradient'] as List<Color>,
                       ),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.12),
+                        width: 1,
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.35),
+                          color: Colors.black.withValues(alpha: 0.45),
                           blurRadius: 18,
-                          offset: const Offset(0, 7),
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
