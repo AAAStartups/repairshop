@@ -144,25 +144,28 @@ class _OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isLive ? const Color(0xFF003A26).withValues(alpha: 0.3) : const Color(0xFFD1D9D6),
-          width: isLive ? 1.5 : 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isLive ? 0.06 : 0.03),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+    return QFPressable(
+      onTap: onTap,
+      pressedScale: 0.98,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isLive ? const Color(0xFF003A26).withValues(alpha: 0.3) : const Color(0xFFE8ECEA),
+            width: isLive ? 1.5 : 1,
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isLive ? 0.06 : 0.03),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           // Top Header Strip
           Padding(
             padding: const EdgeInsets.all(16),
@@ -368,8 +371,9 @@ class _OrderCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class _EmptyTab extends StatelessWidget {

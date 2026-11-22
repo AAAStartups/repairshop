@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../controllers/booking_flow_controller.dart';
+import '../../../../core/widgets/qf_pressable.dart';
 import '../../../../core/widgets/qf_step_indicator.dart';
 
 class PickupSchedulingScreen extends ConsumerStatefulWidget {
@@ -18,7 +19,7 @@ class _PickupSchedulingScreenState extends ConsumerState<PickupSchedulingScreen>
 
   final List<Map<String, dynamic>> _timeSlots = [
     {'id': 'morning', 'label': 'Morning Window', 'time': '9:00 AM – 12:00 PM', 'emoji': '🌅', 'badge': 'Most Popular'},
-    {'id': 'afternoon', 'label': 'Afternoon Window', 'time': '12:00 PM – 3:00 PM', 'emoji': '☀️', 'badge': 'Quickest'},
+    {'id': 'afternoon', 'label': 'Afternoon Window', 'time': '12:00 PM – 3:00 PM', 'emoji': '☀️', 'badge': 'Fastest'},
     {'id': 'evening', 'label': 'Evening Window', 'time': '3:00 PM – 7:00 PM', 'emoji': '🌇', 'badge': null},
     {'id': 'night', 'label': 'Night Window', 'time': '7:00 PM – 9:00 PM', 'emoji': '🌙', 'badge': null},
   ];
@@ -31,7 +32,7 @@ class _PickupSchedulingScreenState extends ConsumerState<PickupSchedulingScreen>
     final draft = ref.read(bookingFlowProvider);
     if (draft.pickupDate != null) _selectedDate = draft.pickupDate!;
     if (draft.pickupTimeSlot != null) {
-      final match = _timeSlots.where((s) => s['label'] == draft.pickupTimeSlot || s['id'] == draft.pickupTimeSlot);
+      final match = _timeSlots.where((s) => s['label'] == draft.pickupTimeSlot || s['id'] == draft.pickupTimeSlot || s['time'] == draft.pickupTimeSlot);
       if (match.isNotEmpty) {
         _selectedSlot = match.first['id'];
       }
@@ -41,340 +42,450 @@ class _PickupSchedulingScreenState extends ConsumerState<PickupSchedulingScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F6F4),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: GestureDetector(
-          onTap: () => context.pop(),
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: const Color(0xFFE8ECEA), borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: Color(0xFF003A26)),
-          ),
-        ),
-        title: const Text(
-          'Select Pickup Slot',
-          style: TextStyle(fontFamily: 'Inter', fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF003A26)),
-        ),
-      ),
-      body: Column(
-        children: [
-          QFStepIndicator(
-            currentStep: 5,
-            totalSteps: 5,
-            title: 'Schedule Pickup',
-            subtitle: 'Final Step',
-          ),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(18),
-              physics: const BouncingScrollPhysics(),
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF003A26), Color(0xFF004D33)],
+      backgroundColor: const Color(0xFFF4F6F5),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // --- TOP APP BAR ---
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              child: Row(
+                children: [
+                  QFPressable(
+                    onTap: () => context.pop(),
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8ECEA),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          size: 16,
+                          color: Color(0xFF003A26),
+                        ),
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  const SizedBox(width: 14),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Schedule Pickup Slot',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF003A26),
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'Choose convenient date & time for technician arrival',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF5F6F67),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Step Indicator
+            const QFStepIndicator(
+              currentStep: 5,
+              totalSteps: 5,
+              title: 'Schedule Pickup',
+              subtitle: 'Final Step before Review',
+            ),
+
+            // --- SCHEDULING CONTENT ---
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                physics: const BouncingScrollPhysics(),
+                children: [
+                  // Free Pickup Guarantee Hero
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF003A26),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF003A26).withValues(alpha: 0.25),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: const Center(
+                            child: Icon(Icons.two_wheeler_rounded, color: Color(0xFFEDB000), size: 24),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Free Doorstep Handover',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'Executive arrives in verified uniform with toolkit',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 11.5,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEDB000),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text(
+                            'FREE',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF003A26),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Date Selection Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Select Pickup Date',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF003A26),
+                        ),
+                      ),
+                      Text(
+                        DateFormat('MMMM yyyy').format(_selectedDate),
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF5F6F67),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Date Rail
+                  SizedBox(
+                    height: 84,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: _next7Days.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 10),
+                      itemBuilder: (context, index) {
+                        final date = _next7Days[index];
+                        final isSelected = DateFormat('yyyyMMdd').format(date) == DateFormat('yyyyMMdd').format(_selectedDate);
+                        final isToday = index == 0;
+
+                        return QFPressable(
+                          onTap: () => setState(() => _selectedDate = date),
+                          pressedScale: 0.94,
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            width: 66,
+                            decoration: BoxDecoration(
+                              color: isSelected ? const Color(0xFF003A26) : Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: isSelected
+                                    ? const Color(0xFFEDB000)
+                                    : const Color(0xFFE8ECEA),
+                                width: isSelected ? 2 : 1,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: isSelected
+                                      ? const Color(0xFF003A26).withValues(alpha: 0.25)
+                                      : Colors.black.withValues(alpha: 0.02),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  isToday ? 'TODAY' : DateFormat('EEE').format(date).toUpperCase(),
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                    color: isSelected ? const Color(0xFFEDB000) : const Color(0xFF5F6F67),
+                                    letterSpacing: 0.4,
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  DateFormat('d').format(date),
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w900,
+                                    color: isSelected ? Colors.white : const Color(0xFF003A26),
+                                  ),
+                                ),
+                                Text(
+                                  DateFormat('MMM').format(date),
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                    color: isSelected ? Colors.white70 : const Color(0xFF5F6F67),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: 22),
+
+                  // Time Slots Header
+                  const Text(
+                    'Available Time Windows',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF003A26),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Slot Cards
+                  ..._timeSlots.map((slot) {
+                    final isSelected = _selectedSlot == slot['id'];
+
+                    return QFPressable(
+                      onTap: () => setState(() => _selectedSlot = slot['id']),
+                      pressedScale: 0.98,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        margin: const EdgeInsets.only(bottom: 10),
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: isSelected ? const Color(0xFF003A26) : const Color(0xFFE8ECEA),
+                            width: isSelected ? 2 : 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: isSelected
+                                  ? const Color(0xFF003A26).withValues(alpha: 0.1)
+                                  : Colors.black.withValues(alpha: 0.02),
+                              blurRadius: 10,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: isSelected ? const Color(0xFF003A26) : const Color(0xFFF4F6F5),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Center(
+                                child: Text(slot['emoji']!, style: const TextStyle(fontSize: 20)),
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        slot['label']!,
+                                        style: TextStyle(
+                                          fontFamily: 'Inter',
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w800,
+                                          color: isSelected ? const Color(0xFF003A26) : const Color(0xFF1F2D27),
+                                        ),
+                                      ),
+                                      if (slot['badge'] != null) ...[
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFEDB000).withValues(alpha: 0.2),
+                                            borderRadius: BorderRadius.circular(5),
+                                          ),
+                                          child: Text(
+                                            slot['badge']!,
+                                            style: const TextStyle(
+                                              fontFamily: 'Inter',
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.w800,
+                                              color: Color(0xFF003A26),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    slot['time']!,
+                                    style: const TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontSize: 11.5,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xFF5F6F67),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: isSelected ? const Color(0xFF003A26) : Colors.transparent,
+                                border: Border.all(
+                                  color: isSelected ? const Color(0xFF003A26) : const Color(0xFFD1D9D6),
+                                  width: 2,
+                                ),
+                              ),
+                              child: isSelected
+                                  ? const Center(
+                                      child: Icon(Icons.check_rounded, color: Color(0xFFEDB000), size: 14),
+                                    )
+                                  : null,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+
+            // --- BOTTOM CONTINUE ACTION BAR ---
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 18,
+                    offset: const Offset(0, -4),
+                  ),
+                ],
+              ),
+              child: QFPressable(
+                onTap: () {
+                  final slotLabel = _timeSlots.firstWhere((s) => s['id'] == _selectedSlot)['time']!;
+                  ref.read(bookingFlowProvider.notifier).updateSchedule(date: _selectedDate, slot: slotLabel);
+                  context.push('/booking-summary');
+                },
+                pressedScale: 0.96,
+                child: Container(
+                  width: double.infinity,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEDB000),
+                    borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF003A26).withValues(alpha: 0.25),
+                        color: const Color(0xFFEDB000).withValues(alpha: 0.35),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(12),
+                  child: const Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Review Booking Summary',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xFF003A26),
+                          ),
                         ),
-                        child: const Center(child: Text('🚚', style: TextStyle(fontSize: 22))),
-                      ),
-                      const SizedBox(width: 14),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Free Doorstep Handover',
-                              style: TextStyle(fontFamily: 'Inter', fontSize: 14, fontWeight: FontWeight.w800, color: Colors.white),
-                            ),
-                            SizedBox(height: 2),
-                            Text(
-                              'Executive arrives in verified uniform with toolkit',
-                              style: TextStyle(fontFamily: 'Inter', fontSize: 11, color: Colors.white70),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEDB000),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Text(
-                          'FREE',
-                          style: TextStyle(fontFamily: 'Inter', fontSize: 11, fontWeight: FontWeight.w900, color: Color(0xFF003A26)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 22),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Preferred Date',
-                      style: TextStyle(fontFamily: 'Inter', fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF003A26)),
+                        SizedBox(width: 8),
+                        Icon(Icons.arrow_forward_rounded, color: Color(0xFF003A26), size: 18),
+                      ],
                     ),
-                    Text(
-                      DateFormat('MMMM yyyy').format(_selectedDate),
-                      style: const TextStyle(fontFamily: 'Inter', fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF5F6F67)),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 85,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: _next7Days.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 10),
-                    itemBuilder: (context, index) {
-                      final date = _next7Days[index];
-                      final isSelected = DateFormat('yyyyMMdd').format(date) == DateFormat('yyyyMMdd').format(_selectedDate);
-                      final isToday = index == 0;
-
-                      return GestureDetector(
-                        onTap: () => setState(() => _selectedDate = date),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          width: 64,
-                          decoration: BoxDecoration(
-                            color: isSelected ? const Color(0xFF003A26) : Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: isSelected ? const Color(0xFFEDB000) : const Color(0xFFD1D9D6).withValues(alpha: 0.8),
-                              width: isSelected ? 2 : 1,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: isSelected
-                                    ? const Color(0xFF003A26).withValues(alpha: 0.25)
-                                    : Colors.black.withValues(alpha: 0.02),
-                                blurRadius: isSelected ? 10 : 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                isToday ? 'TODAY' : DateFormat('EEE').format(date).toUpperCase(),
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w800,
-                                  color: isSelected ? const Color(0xFFEDB000) : const Color(0xFF5F6F67),
-                                  letterSpacing: 0.4,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                DateFormat('d').format(date),
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w900,
-                                  color: isSelected ? Colors.white : const Color(0xFF003A26),
-                                ),
-                              ),
-                              Text(
-                                DateFormat('MMM').format(date),
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w600,
-                                  color: isSelected ? Colors.white70 : const Color(0xFF5F6F67),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  'Available Time Windows',
-                  style: TextStyle(fontFamily: 'Inter', fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF003A26)),
-                ),
-                const SizedBox(height: 12),
-                ..._timeSlots.map((slot) {
-                  final isSelected = _selectedSlot == slot['id'];
-
-                  return GestureDetector(
-                    onTap: () => setState(() => _selectedSlot = slot['id']),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isSelected ? Colors.white : Colors.white,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: isSelected ? const Color(0xFF003A26) : const Color(0xFFD1D9D6).withValues(alpha: 0.8),
-                          width: isSelected ? 2 : 1,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: isSelected
-                                ? const Color(0xFF003A26).withValues(alpha: 0.1)
-                                : Colors.black.withValues(alpha: 0.02),
-                            blurRadius: isSelected ? 12 : 4,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: isSelected ? const Color(0xFF003A26) : const Color(0xFFF3F6F4),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Center(
-                              child: Text(slot['emoji']!, style: const TextStyle(fontSize: 20)),
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      slot['label']!,
-                                      style: const TextStyle(
-                                        fontFamily: 'Inter',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w800,
-                                        color: Color(0xFF003A26),
-                                      ),
-                                    ),
-                                    if (slot['badge'] != null) ...[
-                                      const SizedBox(width: 8),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFFEDB000).withValues(alpha: 0.2),
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: Text(
-                                          slot['badge']!,
-                                          style: const TextStyle(
-                                            fontFamily: 'Inter',
-                                            fontSize: 9,
-                                            fontWeight: FontWeight.w800,
-                                            color: Color(0xFF003A26),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  slot['time']!,
-                                  style: const TextStyle(fontFamily: 'Inter', fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF5F6F67)),
-                                ),
-                              ],
-                            ),
-                          ),
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: isSelected ? const Color(0xFF003A26) : Colors.transparent,
-                              border: Border.all(
-                                color: isSelected ? const Color(0xFF003A26) : const Color(0xFFD1D9D6),
-                                width: 2,
-                              ),
-                            ),
-                            child: isSelected
-                                ? const Center(
-                                    child: Icon(Icons.check_rounded, color: Color(0xFFEDB000), size: 14),
-                                  )
-                                : null,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
-            color: Colors.white,
-            child: GestureDetector(
-              onTap: () {
-                final slotLabel = _timeSlots.firstWhere((s) => s['id'] == _selectedSlot)['time']!;
-                ref.read(bookingFlowProvider.notifier).updateSchedule(date: _selectedDate, slot: slotLabel);
-                context.push('/booking-summary');
-              },
-              child: Container(
-                width: double.infinity,
-                height: 56,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFEDB000), Color(0xFFF9BF1C)],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFEDB000).withValues(alpha: 0.35),
-                      blurRadius: 14,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Review Booking Summary',
-                        style: TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF003A26)),
-                      ),
-                      SizedBox(width: 8),
-                      Icon(Icons.arrow_forward_rounded, color: Color(0xFF003A26), size: 18),
-                    ],
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
