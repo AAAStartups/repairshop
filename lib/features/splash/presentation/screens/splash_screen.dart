@@ -101,7 +101,7 @@ class _SplashScreenState extends State<SplashScreen>
                   borderRadius: BorderRadius.circular(28),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFEDB000).withOpacity(0.4),
+                      color: const Color(0xFFEDB000).withValues(alpha: 0.4),
                       blurRadius: 30,
                       spreadRadius: 5,
                     ),
@@ -153,7 +153,7 @@ class _SplashScreenState extends State<SplashScreen>
                       fontFamily: 'Inter',
                       fontSize: 15,
                       fontWeight: FontWeight.w400,
-                      color: Colors.white.withOpacity(0.65),
+                      color: Colors.white.withValues(alpha: 0.65),
                       letterSpacing: 0.3,
                     ),
                   ),
@@ -177,7 +177,7 @@ class _SplashScreenState extends State<SplashScreen>
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 12,
-                color: Colors.white.withOpacity(0.35),
+                color: Colors.white.withValues(alpha: 0.35),
               ),
             ),
           ),
