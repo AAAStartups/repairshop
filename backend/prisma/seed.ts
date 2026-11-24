@@ -229,6 +229,26 @@ async function seedRepairsForModel(modelId: string) {
       badge: "Lab Intensive",
       isPopular: false,
     },
+    {
+      title: "Motherboard & IC Micro-Soldering Repair",
+      category: "MOTHERBOARD",
+      description: "Advanced chip-level diagnostic, short-circuit trace repair, and audio/power IC replacement.",
+      price: 2899.0,
+      turnaroundMinutes: 240,
+      warrantyDays: 90,
+      badge: "Expert Lab",
+      isPopular: false,
+    },
+    {
+      title: "Comprehensive 32-Point Device Diagnostics",
+      category: "DIAGNOSTICS",
+      description: "Full hardware health check, battery health audit, sensor calibration, and performance benchmarks.",
+      price: 0.0,
+      turnaroundMinutes: 30,
+      warrantyDays: 30,
+      badge: "Free Diagnostic",
+      isPopular: true,
+    },
   ];
 
   for (const r of repairs) {

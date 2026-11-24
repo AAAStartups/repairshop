@@ -971,7 +971,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final name = svc.name.toLowerCase();
     if (cat.contains('screen') || name.contains('screen') || name.contains('display')) return 'screen';
     if (cat.contains('battery') || name.contains('battery')) return 'battery';
-    if (cat.contains('water') || name.contains('water')) return 'water';
+    if (cat.contains('charging') || name.contains('charging') || name.contains('port')) return 'port';
+    if (cat.contains('water') || name.contains('water') || name.contains('liquid')) return 'water';
+    if (cat.contains('camera') || name.contains('camera') || name.contains('lens')) return 'camera';
+    if (cat.contains('back_glass') || name.contains('back') || name.contains('glass')) return 'back_glass';
+    if (cat.contains('motherboard') || name.contains('board') || name.contains('ic')) return 'motherboard';
+    if (cat.contains('diagnostic') || name.contains('diagnostic')) return 'diagnostics';
     return 'port';
   }
 
@@ -979,7 +984,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     switch (type) {
       case 'screen': return const Color(0xFF003020);
       case 'battery': return const Color(0xFF0A3322);
+      case 'port': return const Color(0xFF0E3826);
       case 'water': return const Color(0xFF042D1E);
+      case 'camera': return const Color(0xFF073024);
+      case 'back_glass': return const Color(0xFF002F23);
+      case 'motherboard': return const Color(0xFF0D3524);
+      case 'diagnostics': return const Color(0xFF003A26);
       default: return const Color(0xFF0E3826);
     }
   }
@@ -1234,6 +1244,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         child: const Center(
           child: Icon(Icons.water_drop_rounded, color: Color(0xFFEDB000), size: 36),
+        ),
+      );
+    } else if (type == 'camera') {
+      return Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: const Color(0xFFEDB000).withValues(alpha: 0.15),
+        ),
+        child: const Center(
+          child: Icon(Icons.photo_camera_rounded, color: Color(0xFFEDB000), size: 34),
+        ),
+      );
+    } else if (type == 'back_glass') {
+      return Container(
+        width: 50,
+        height: 70,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: const Color(0xFFEDB000), width: 1.5),
+          color: const Color(0xFF052A1C),
+        ),
+        child: const Center(
+          child: Icon(Icons.flip_to_back_rounded, color: Color(0xFFEDB000), size: 32),
+        ),
+      );
+    } else if (type == 'motherboard') {
+      return Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFEDB000), width: 1.5),
+          color: const Color(0xFF082D1E),
+        ),
+        child: const Center(
+          child: Icon(Icons.memory_rounded, color: Color(0xFFEDB000), size: 34),
+        ),
+      );
+    } else if (type == 'diagnostics') {
+      return Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: const Color(0xFFEDB000).withValues(alpha: 0.18),
+        ),
+        child: const Center(
+          child: Icon(Icons.verified_user_rounded, color: Color(0xFFEDB000), size: 34),
         ),
       );
     } else {
