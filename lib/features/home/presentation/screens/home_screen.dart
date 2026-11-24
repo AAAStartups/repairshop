@@ -18,16 +18,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   late final PageController _heroController;
   int _currentHeroIndex = 0;
 
-  // Selected Category Index for the horizontal category bar
-  int _selectedCategoryIndex = 0;
-  final List<Map<String, dynamic>> _categories = [
-    {'name': 'All', 'icon': Icons.grid_view_rounded},
-    {'name': 'Phones', 'icon': Icons.phone_iphone_rounded},
-    {'name': 'Laptops', 'icon': Icons.laptop_mac_rounded},
-    {'name': 'Tablets', 'icon': Icons.tablet_mac_rounded},
-    {'name': 'Accessories', 'icon': Icons.headphones_rounded},
-  ];
-
   // Location State
   String _selectedLocation = 'Indiranagar, Bangalore';
 
@@ -488,14 +478,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
 
-              const SizedBox(height: 22),
+              const SizedBox(height: 20),
 
-              // --- 2. CATEGORY NAVIGATION (Icon Above Label, Animated Underline) ---
-              _buildCategoryNavigationRail(),
-
-              const SizedBox(height: 16),
-
-              // --- 3. HERO PROMOTIONAL CAROUSEL ---
+              // --- 2. HERO PROMOTIONAL CAROUSEL ---
               _buildHeroCarousel(),
 
               const SizedBox(height: 24),
@@ -505,72 +490,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   // ==========================================
-  // 2. CATEGORY RAIL (Minimalist, Animated Underline)
-  // ==========================================
-  Widget _buildCategoryNavigationRail() {
-    return SizedBox(
-      height: 72,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: _categories.length,
-        itemBuilder: (context, index) {
-          final cat = _categories[index];
-          final isSelected = index == _selectedCategoryIndex;
-
-          return QFPressable(
-            onTap: () {
-              HapticFeedback.lightImpact();
-              setState(() {
-                _selectedCategoryIndex = index;
-              });
-            },
-            pressedScale: 0.94,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    cat['icon'] as IconData,
-                    color: isSelected ? Colors.white : Colors.white54,
-                    size: 25,
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    cat['name'] as String,
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 12,
-                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                      color: isSelected ? Colors.white : Colors.white54,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-
-                  // Animated White Underline indicator (matching Circle screenshot)
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeOutCubic,
-                    height: 2.5,
-                    width: isSelected ? 24 : 0,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  // ==========================================
-  // 3. HERO CAROUSEL (Full-Width Card, No Peeking Slivers)
+  // 2. HERO CAROUSEL (Full-Width Card, No Peeking Slivers)
   // ==========================================
   Widget _buildHeroCarousel() {
     return Column(
