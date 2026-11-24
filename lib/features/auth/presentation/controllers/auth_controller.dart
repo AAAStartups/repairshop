@@ -41,7 +41,16 @@ class AuthState {
 class AuthController extends StateNotifier<AuthState> {
   final AuthRepository _repo;
 
-  AuthController(this._repo) : super(const AuthState());
+  AuthController(this._repo) : super(const AuthState()) {
+    checkSavedSession();
+  }
+
+  Future<void> checkSavedSession() async {
+    final user = await _repo.getSavedUser();
+    if (user != null) {
+      state = state.copyWith(isAuthenticated: true, user: user);
+    }
+  }
 
   Future<void> sendOtp(String phoneNumber) async {
     state = state.copyWith(isLoading: true, error: null, pendingPhone: phoneNumber);

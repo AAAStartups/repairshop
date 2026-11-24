@@ -6,6 +6,11 @@ import { authenticate, AuthenticatedRequest } from "../middleware/auth.js";
 
 export const authRouter = Router();
 
+// Rate limiter map: phoneNumber -> Array of request timestamps
+const otpRequestTimestamps = new Map<string, number[]>();
+const MAX_REQUESTS = 5;
+const WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+
 const sendOtpSchema = z.object({
   phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
 });
@@ -20,6 +25,25 @@ const verifyOtpSchema = z.object({
 authRouter.post("/send-otp", async (req: Request, res: Response) => {
   try {
     const { phoneNumber } = sendOtpSchema.parse(req.body);
+
+    // Rate-limiting check
+    const now = Date.now();
+    const timestamps = (otpRequestTimestamps.get(phoneNumber) || []).filter(
+      (ts) => now - ts < WINDOW_MS
+    );
+
+    if (timestamps.length >= MAX_REQUESTS) {
+      const oldest = timestamps[0];
+      const waitSeconds = Math.ceil((WINDOW_MS - (now - oldest)) / 1000);
+      return res.status(429).json({
+        success: false,
+        message: `Too many OTP requests. Please try again in ${waitSeconds} seconds.`,
+        retryAfterSeconds: waitSeconds,
+      });
+    }
+
+    timestamps.push(now);
+    otpRequestTimestamps.set(phoneNumber, timestamps);
 
     // In commercial dev mode, OTP is 123456 (or logged to console for test phones)
     console.log(`📲 [SMS GATEWAY SIMULATOR] Sent OTP '123456' to ${phoneNumber}`);

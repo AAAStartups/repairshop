@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../controllers/booking_flow_controller.dart';
+import '../../../../core/services/location_service.dart';
 import '../../../../core/widgets/qf_pressable.dart';
 import '../../../../core/widgets/qf_step_indicator.dart';
 
@@ -20,6 +21,7 @@ class _PickupAddressScreenState extends ConsumerState<PickupAddressScreen> {
   final _pincodeCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   String _addressType = 'Home';
+  bool _isLocating = false;
   final _formKey = GlobalKey<FormState>();
 
   final List<String> _addressTypes = ['Home', 'Work', 'Other'];
@@ -46,6 +48,61 @@ class _PickupAddressScreenState extends ConsumerState<PickupAddressScreen> {
     _pincodeCtrl.dispose();
     _phoneCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _detectLiveLocation() async {
+    setState(() => _isLocating = true);
+    final result = await QuickFixLocationService.getCurrentAddress();
+    if (!mounted) return;
+    setState(() => _isLocating = false);
+
+    if (result.isSuccess) {
+      setState(() {
+        if (result.flatOrPremises != null && _flatCtrl.text.isEmpty) {
+          _flatCtrl.text = result.flatOrPremises!;
+        }
+        if (result.street != null) {
+          _streetCtrl.text = result.street!;
+        }
+        if (result.subLocality != null && _landmarkCtrl.text.isEmpty) {
+          _landmarkCtrl.text = result.subLocality!;
+        }
+        if (result.city != null) {
+          _cityCtrl.text = result.city!;
+        }
+        if (result.postalCode != null) {
+          _pincodeCtrl.text = result.postalCode!;
+        }
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle_rounded, color: Color(0xFFEDB000), size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '📍 Detected: ${result.subLocality ?? result.city} (${result.postalCode}) • ${result.hubName ?? 'Active Hub'}',
+                  style: const TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w600, fontSize: 12),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: const Color(0xFF003A26),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result.errorMessage ?? 'Could not detect location. Please enter manually.'),
+          backgroundColor: const Color(0xFFEF4444),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   InputDecoration _inputDec(String label, String hint, IconData icon) => InputDecoration(
@@ -166,20 +223,7 @@ class _PickupAddressScreenState extends ConsumerState<PickupAddressScreen> {
                   children: [
                     // Auto-Detect Location Card
                     QFPressable(
-                      onTap: () {
-                        setState(() {
-                          _cityCtrl.text = 'Bangalore';
-                          _pincodeCtrl.text = '560038';
-                          _streetCtrl.text = '100ft Road, Indiranagar';
-                          _landmarkCtrl.text = 'Near Metro Station';
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('📍 Location updated: Indiranagar, Bangalore 560038'),
-                            backgroundColor: Color(0xFF003A26),
-                          ),
-                        );
-                      },
+                      onTap: _isLocating ? null : _detectLiveLocation,
                       pressedScale: 0.96,
                       child: Container(
                         padding: const EdgeInsets.all(16),
@@ -202,26 +246,39 @@ class _PickupAddressScreenState extends ConsumerState<PickupAddressScreen> {
                                 color: const Color(0xFF003A26),
                                 borderRadius: BorderRadius.circular(14),
                               ),
-                              child: const Icon(Icons.my_location_rounded, color: Color(0xFFEDB000), size: 22),
+                              child: _isLocating
+                                  ? const Center(
+                                      child: SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Color(0xFFEDB000),
+                                        ),
+                                      ),
+                                    )
+                                  : const Icon(Icons.my_location_rounded, color: Color(0xFFEDB000), size: 22),
                             ),
                             const SizedBox(width: 14),
-                            const Expanded(
+                            Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Use Current GPS Location',
-                                    style: TextStyle(
+                                    _isLocating ? 'Acquiring GPS Fix...' : 'Use Current GPS Location',
+                                    style: const TextStyle(
                                       fontFamily: 'Inter',
                                       fontSize: 14,
                                       fontWeight: FontWeight.w800,
                                       color: Color(0xFF003A26),
                                     ),
                                   ),
-                                  SizedBox(height: 2),
+                                  const SizedBox(height: 2),
                                   Text(
-                                    'Detect coordinates for precise technician dispatch',
-                                    style: TextStyle(
+                                    _isLocating
+                                        ? 'Locking satellite coordinates and postal pincode'
+                                        : 'Detect coordinates for precise technician dispatch',
+                                    style: const TextStyle(
                                       fontFamily: 'Inter',
                                       fontSize: 11.5,
                                       color: Color(0xFF5F6F67),
@@ -230,7 +287,8 @@ class _PickupAddressScreenState extends ConsumerState<PickupAddressScreen> {
                                 ],
                               ),
                             ),
-                            const Icon(Icons.chevron_right_rounded, color: Color(0xFF003A26)),
+                            if (!_isLocating)
+                              const Icon(Icons.chevron_right_rounded, color: Color(0xFF003A26)),
                           ],
                         ),
                       ),

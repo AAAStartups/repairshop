@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quickfix/core/network/api_client.dart';
+import 'package:quickfix/core/services/location_service.dart';
 import 'package:quickfix/features/catalog/data/catalog_repository.dart';
 import 'package:quickfix/features/booking/data/booking_repository.dart';
 import 'package:quickfix/features/booking/domain/models/booking_draft.dart';
@@ -38,6 +39,18 @@ void main() {
       expect(result.isSuccess, isTrue);
       expect(result.bookingNumber, startsWith('QF-'));
       expect(result.totalAmount, equals(3899.0));
+    });
+
+    test('QuickFixLocationResult constructs address text correctly', () {
+      const loc = QuickFixLocationResult(
+        isSuccess: true,
+        street: '100 Feet Road',
+        subLocality: 'Indiranagar',
+        city: 'Bengaluru',
+        postalCode: '560038',
+      );
+      expect(loc.fullAddressText, equals('100 Feet Road, Indiranagar, Bengaluru, 560038'));
+      expect(loc.isServiceable, isTrue);
     });
   });
 }

@@ -76,6 +76,38 @@ class AuthRepository {
     return null;
   }
 
+  Future<UserModel?> getSavedUser() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('quickfix_jwt_token');
+      final phone = prefs.getString('quickfix_user_phone');
+      if (token == null || phone == null) return null;
+
+      try {
+        final res = await _client.get(ApiEndpoints.me);
+        if (res.statusCode == 200 && res.data['success'] == true) {
+          final userData = res.data['user'];
+          return UserModel(
+            uid: userData['id'] ?? 'user_saved',
+            phone: userData['phoneNumber'] ?? phone,
+            name: userData['fullName'],
+            email: userData['email'],
+            createdAt: DateTime.now(),
+          );
+        }
+      } catch (_) {}
+
+      return UserModel(
+        uid: 'user_saved',
+        phone: phone,
+        name: 'QuickFix Member',
+        createdAt: DateTime.now(),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> signOut() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('quickfix_jwt_token');
