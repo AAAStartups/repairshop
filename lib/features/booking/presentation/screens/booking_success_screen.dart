@@ -65,7 +65,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen> with Single
               ),
               const SizedBox(height: 28),
               const Text(
-                'Booking Confirmed! 🎉',
+                'Booking Confirmed!',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 26,
@@ -97,7 +97,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen> with Single
                   children: [
                     _InfoRow(label: 'Booking ID', value: '#${widget.orderId}', isHighlight: true),
                     const SizedBox(height: 14),
-                    const _InfoRow(label: 'Pickup & Diagnosis', value: 'Scheduled ✓'),
+                    const _InfoRow(label: 'Pickup & Diagnosis', value: 'Scheduled (Confirmed)'),
                     const SizedBox(height: 14),
                     const _InfoRow(label: 'Advance Payment', value: '₹0 (Pay after repair)'),
                     const SizedBox(height: 14),

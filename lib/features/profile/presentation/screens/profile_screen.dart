@@ -451,7 +451,7 @@ class _GuestProfileViewState extends State<_GuestProfileView> {
                             hintText: '98765 43210',
                             prefixIcon: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                              child: const Text('🇮🇳 +91', style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w700, color: Color(0xFF003A26))),
+                              child: const Text('+91', style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w700, color: Color(0xFF003A26))),
                             ),
                             filled: true,
                             fillColor: const Color(0xFFF3F6F4),

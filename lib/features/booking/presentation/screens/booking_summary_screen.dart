@@ -742,7 +742,7 @@ class _AuthBottomSheetState extends ConsumerState<_AuthBottomSheet> {
                   prefixIcon: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                     child: const Text(
-                      '🇮🇳 +91',
+                      '+91',
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 15,

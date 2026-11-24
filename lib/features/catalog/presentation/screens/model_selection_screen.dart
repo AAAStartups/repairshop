@@ -233,7 +233,17 @@ class _ModelSelectionScreenState extends ConsumerState<ModelSelectionScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text('📱', style: TextStyle(fontSize: 48)),
+                          Container(
+                            width: 68,
+                            height: 68,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF003A26).withValues(alpha: 0.08),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Center(
+                              child: Icon(Icons.devices_other_rounded, size: 36, color: Color(0xFF003A26)),
+                            ),
+                          ),
                           const SizedBox(height: 12),
                           Text(
                             'No models found for $brandName',

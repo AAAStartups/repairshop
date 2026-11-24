@@ -129,7 +129,7 @@ class QuickFixLocationService {
         hubName: 'Bengaluru Hub',
       );
     } catch (e) {
-      debugPrint('⚠️ [QuickFix Location Error]: $e');
+      debugPrint('[QuickFix Location Error]: $e');
       // If running on desktop/emulator without real GPS satellites, provide fallback demo location
       return const QuickFixLocationResult(
         isSuccess: true,

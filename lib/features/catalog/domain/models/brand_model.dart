@@ -11,7 +11,7 @@ class BrandModel {
     required this.name,
     this.subtitle,
     this.logoAsset,
-    this.logoEmoji = '📱',
+    this.logoEmoji = '',
     this.isPopular = false,
   });
 

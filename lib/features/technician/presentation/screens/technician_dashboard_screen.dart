@@ -92,7 +92,7 @@ class _TechnicianDashboardScreenState extends ConsumerState<TechnicianDashboardS
                   setState(() => _isOnline = val);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(_isOnline ? '🟢 You are now ONLINE for doorstep dispatch.' : '⚪ You are now OFFLINE.'),
+                      content: Text(_isOnline ? 'You are now ONLINE for doorstep dispatch.' : 'You are now OFFLINE.'),
                       backgroundColor: const Color(0xFF003A26),
                       duration: const Duration(seconds: 1),
                     ),
@@ -228,7 +228,7 @@ class _TechnicianDashboardScreenState extends ConsumerState<TechnicianDashboardS
                       child: QFPressable(
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('🗺️ Launching Google Maps Turn-by-Turn Navigation...')),
+                            const SnackBar(content: Text('Launching Google Maps Turn-by-Turn Navigation...')),
                           );
                         },
                         child: Container(
@@ -419,7 +419,7 @@ class _TechnicianDashboardScreenState extends ConsumerState<TechnicianDashboardS
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('✅ Stage completed! Transferred to Central Cleanroom Lab.'),
+                    content: Text('Stage completed! Transferred to Central Cleanroom Lab.'),
                     backgroundColor: Color(0xFF003A26),
                   ),
                 );

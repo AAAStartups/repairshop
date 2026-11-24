@@ -733,7 +733,7 @@ class _RepairTrackingScreenState extends ConsumerState<RepairTrackingScreen> wit
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '$techVehicle • $techRating ★',
+                          '$techVehicle • Rating: $techRating / 5.0',
                           style: const TextStyle(fontFamily: 'Inter', fontSize: 11.5, color: Color(0xFF5F6F67)),
                         ),
                       ],
@@ -1029,7 +1029,7 @@ class _RepairTrackingScreenState extends ConsumerState<RepairTrackingScreen> wit
                 ),
                 child: const Row(
                   children: [
-                    Text('🛡️', style: TextStyle(fontSize: 24)),
+                    Icon(Icons.verified_user_rounded, color: Color(0xFFEDB000), size: 26),
                     SizedBox(width: 12),
                     Expanded(
                       child: Column(
