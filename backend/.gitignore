@@ -4,3 +4,5 @@ dist/
 !prisma/dev.db
 *.db-journal
 .env.local
+
+.vercel
