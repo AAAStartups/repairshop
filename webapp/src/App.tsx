@@ -165,26 +165,37 @@ export const App: React.FC = () => {
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 14 }}>
           {mockBrands.map((b) => (
             <div
               key={b.id}
               onClick={() => setIsBookingOpen(true)}
-              style={{
-                backgroundColor: 'white',
-                border: '1px solid #E8ECEA',
-                borderRadius: 18,
-                padding: '20px 12px',
-                textAlign: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
-              }}
+              className="brand-select-card"
+              title={`Book repair for ${b.name}`}
             >
-              <div style={{ fontSize: 32, marginBottom: 8 }}>
-                {b.name === 'Apple' ? '🍎' : b.name === 'Samsung' ? '📱' : b.name === 'OnePlus' ? '🔴' : b.name === 'Xiaomi' ? '⬛' : b.name.includes('Pixel') ? '🌈' : '📲'}
+              <div className="brand-logo-pill">
+                <img
+                  src={b.logoAsset || `/assets/brands/${b.slug || b.id}.png`}
+                  alt={`${b.name} official logo`}
+                  className="brand-logo-img"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent && !parent.querySelector('.brand-fallback')) {
+                      const span = document.createElement('span');
+                      span.className = 'brand-fallback';
+                      span.style.fontSize = '24px';
+                      span.textContent = '📱';
+                      parent.appendChild(span);
+                    }
+                  }}
+                />
               </div>
               <div style={{ fontSize: 13, fontWeight: 800, color: '#003A26' }}>{b.name}</div>
+              {b.subtitle && (
+                <div style={{ fontSize: 10, color: '#5F6F67', fontWeight: 600, marginTop: 1 }}>{b.subtitle}</div>
+              )}
               <div style={{ fontSize: 10, color: '#10B981', fontWeight: 700, marginTop: 4 }}>In Stock ✓</div>
             </div>
           ))}

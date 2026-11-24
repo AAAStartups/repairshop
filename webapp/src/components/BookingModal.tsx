@@ -230,22 +230,55 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onB
                         setSelectedBrand(b);
                         setStep(2);
                       }}
-                      style={{
-                        padding: '18px 12px',
-                        borderRadius: 18,
-                        border: isSelected ? '2px solid #EDB000' : '1px solid #E8ECEA',
-                        backgroundColor: isSelected ? '#003A26' : '#FFFFFF',
-                        color: isSelected ? '#FFFFFF' : '#003A26',
-                        textAlign: 'center',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
-                      }}
+                      className={`brand-select-card ${isSelected ? 'selected' : ''}`}
+                      title={`Select ${b.name}`}
                     >
-                      <div style={{ fontSize: 32, marginBottom: 8 }}>
-                        {b.name === 'Apple' ? '🍎' : b.name === 'Samsung' ? '📱' : b.name === 'OnePlus' ? '🔴' : b.name === 'Xiaomi' ? '⬛' : b.name.includes('Pixel') ? '🌈' : '📲'}
+                      {isSelected && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: 8,
+                            right: 8,
+                            width: 18,
+                            height: 18,
+                            borderRadius: '50%',
+                            backgroundColor: '#EDB000',
+                            color: '#003A26',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: 11,
+                            fontWeight: 900,
+                          }}
+                        >
+                          ✓
+                        </div>
+                      )}
+                      <div className="brand-logo-pill">
+                        <img
+                          src={b.logoAsset || `/assets/brands/${b.slug || b.id}.png`}
+                          alt={`${b.name} official logo`}
+                          className="brand-logo-img"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            target.style.display = 'none';
+                            const parent = target.parentElement;
+                            if (parent && !parent.querySelector('.brand-fallback')) {
+                              const span = document.createElement('span');
+                              span.className = 'brand-fallback';
+                              span.style.fontSize = '24px';
+                              span.textContent = '📱';
+                              parent.appendChild(span);
+                            }
+                          }}
+                        />
                       </div>
                       <div style={{ fontSize: 13, fontWeight: 700 }}>{b.name}</div>
+                      {b.subtitle && (
+                        <div style={{ fontSize: 10, color: isSelected ? '#EDB000' : '#5F6F67', fontWeight: 600, marginTop: 1 }}>
+                          {b.subtitle}
+                        </div>
+                      )}
                       <div style={{ fontSize: 10, color: isSelected ? '#EDB000' : '#10B981', marginTop: 4, fontWeight: 600 }}>
                         OEM Parts ✓
                       </div>

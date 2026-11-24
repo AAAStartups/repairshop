@@ -8,6 +8,8 @@ export interface Brand {
   id: string;
   name: string;
   slug: string;
+  subtitle?: string;
+  logoAsset?: string;
   logoUrl?: string;
   popularity?: number;
   modelCount?: number;
@@ -54,14 +56,18 @@ export interface BookingPayload {
 
 // Fallback Mock Data matching Flutter App
 export const mockBrands: Brand[] = [
-  { id: 'apple', name: 'Apple', slug: 'apple', popularity: 100 },
-  { id: 'samsung', name: 'Samsung', slug: 'samsung', popularity: 95 },
-  { id: 'oneplus', name: 'OnePlus', slug: 'oneplus', popularity: 90 },
-  { id: 'xiaomi', name: 'Xiaomi', slug: 'xiaomi', popularity: 88 },
-  { id: 'pixel', name: 'Google Pixel', slug: 'pixel', popularity: 85 },
-  { id: 'vivo', name: 'Vivo', slug: 'vivo', popularity: 75 },
-  { id: 'realme', name: 'Realme', slug: 'realme', popularity: 70 },
-  { id: 'nothing', name: 'Nothing', slug: 'nothing', popularity: 65 },
+  { id: 'apple', name: 'Apple', slug: 'apple', logoAsset: '/assets/brands/apple.png', popularity: 100 },
+  { id: 'samsung', name: 'Samsung', slug: 'samsung', logoAsset: '/assets/brands/samsung.png', popularity: 95 },
+  { id: 'xiaomi', name: 'Xiaomi', slug: 'xiaomi', subtitle: 'Redmi / Mi', logoAsset: '/assets/brands/xiaomi.png', popularity: 88 },
+  { id: 'oneplus', name: 'OnePlus', slug: 'oneplus', logoAsset: '/assets/brands/oneplus.png', popularity: 90 },
+  { id: 'pixel', name: 'Google Pixel', slug: 'pixel', logoAsset: '/assets/brands/pixel.png', popularity: 85 },
+  { id: 'vivo', name: 'Vivo', slug: 'vivo', logoAsset: '/assets/brands/vivo.png', popularity: 75 },
+  { id: 'oppo', name: 'Oppo', slug: 'oppo', logoAsset: '/assets/brands/oppo.png', popularity: 72 },
+  { id: 'realme', name: 'Realme', slug: 'realme', logoAsset: '/assets/brands/realme.png', popularity: 70 },
+  { id: 'motorola', name: 'Motorola', slug: 'motorola', logoAsset: '/assets/brands/motorola.png', popularity: 68 },
+  { id: 'nothing', name: 'Nothing', slug: 'nothing', logoAsset: '/assets/brands/nothing.png', popularity: 65 },
+  { id: 'huawei', name: 'Huawei', slug: 'huawei', logoAsset: '/assets/brands/huawei.png', popularity: 60 },
+  { id: 'nokia', name: 'Nokia', slug: 'nokia', logoAsset: '/assets/brands/nokia.png', popularity: 55 },
 ];
 
 export const mockModelsByBrand: Record<string, DeviceModel[]> = {
@@ -91,6 +97,34 @@ export const mockModelsByBrand: Record<string, DeviceModel[]> = {
   pixel: [
     { id: 'pixel-9-pro-xl', brandId: 'pixel', name: 'Pixel 9 Pro XL', slug: 'pixel-9-pro-xl', series: 'Pixel 9 Series', releaseYear: 2024, hasOemParts: true },
     { id: 'pixel-8-pro', brandId: 'pixel', name: 'Pixel 8 Pro', slug: 'pixel-8-pro', series: 'Pixel 8 Series', releaseYear: 2023, hasOemParts: true },
+  ],
+  vivo: [
+    { id: 'vivo-x100-pro', brandId: 'vivo', name: 'Vivo X100 Pro 5G', slug: 'vivo-x100-pro', series: 'X Series', releaseYear: 2024, hasOemParts: true },
+    { id: 'vivo-v30-pro', brandId: 'vivo', name: 'Vivo V30 Pro', slug: 'vivo-v30-pro', series: 'V Series', releaseYear: 2024, hasOemParts: true },
+  ],
+  oppo: [
+    { id: 'find-x7-ultra', brandId: 'oppo', name: 'Oppo Find X7 Ultra', slug: 'find-x7-ultra', series: 'Find Series', releaseYear: 2024, hasOemParts: true },
+    { id: 'reno-11-pro', brandId: 'oppo', name: 'Oppo Reno 11 Pro', slug: 'reno-11-pro', series: 'Reno Series', releaseYear: 2024, hasOemParts: true },
+  ],
+  realme: [
+    { id: 'gt-5-pro', brandId: 'realme', name: 'Realme GT5 Pro', slug: 'gt-5-pro', series: 'GT Series', releaseYear: 2024, hasOemParts: true },
+    { id: 'realme-12-pro-plus', brandId: 'realme', name: 'Realme 12 Pro+ 5G', slug: 'realme-12-pro-plus', series: 'Number Series', releaseYear: 2024, hasOemParts: true },
+  ],
+  motorola: [
+    { id: 'edge-50-ultra', brandId: 'motorola', name: 'Motorola Edge 50 Ultra', slug: 'edge-50-ultra', series: 'Edge Series', releaseYear: 2024, hasOemParts: true },
+    { id: 'razr-50-ultra', brandId: 'motorola', name: 'Motorola Razr 50 Ultra', slug: 'razr-50-ultra', series: 'Razr Series', releaseYear: 2024, hasOemParts: true },
+  ],
+  nothing: [
+    { id: 'nothing-phone-2', brandId: 'nothing', name: 'Nothing Phone (2)', slug: 'nothing-phone-2', series: 'Phone Series', releaseYear: 2023, hasOemParts: true },
+    { id: 'nothing-phone-2a', brandId: 'nothing', name: 'Nothing Phone (2a)', slug: 'nothing-phone-2a', series: 'Phone Series', releaseYear: 2024, hasOemParts: true },
+  ],
+  huawei: [
+    { id: 'pura-70-ultra', brandId: 'huawei', name: 'Huawei Pura 70 Ultra', slug: 'pura-70-ultra', series: 'Pura Series', releaseYear: 2024, hasOemParts: true },
+    { id: 'mate-60-pro', brandId: 'huawei', name: 'Huawei Mate 60 Pro', slug: 'mate-60-pro', series: 'Mate Series', releaseYear: 2023, hasOemParts: true },
+  ],
+  nokia: [
+    { id: 'nokia-g42', brandId: 'nokia', name: 'Nokia G42 5G', slug: 'nokia-g42', series: 'G Series', releaseYear: 2023, hasOemParts: true },
+    { id: 'nokia-xr21', brandId: 'nokia', name: 'Nokia XR21 Tough', slug: 'nokia-xr21', series: 'XR Series', releaseYear: 2023, hasOemParts: true },
   ],
 };
 

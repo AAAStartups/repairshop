@@ -134,3 +134,68 @@ body {
   align-items: center;
   gap: 4px;
 }
+
+/* Brand Selection Cards */
+.brand-select-card {
+  background-color: #FFFFFF;
+  border: 1.5px solid var(--card-border);
+  border-radius: 18px;
+  padding: 18px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+}
+
+.brand-select-card:hover {
+  transform: translateY(-2px) scale(1.03);
+  border-color: rgba(0, 58, 38, 0.45);
+  box-shadow: 0 8px 20px rgba(0, 58, 38, 0.08);
+}
+
+.brand-select-card.selected {
+  background-color: var(--primary);
+  border-color: var(--secondary);
+  border-width: 2.2px;
+  color: #FFFFFF;
+  box-shadow: 0 8px 24px rgba(0, 58, 38, 0.25);
+}
+
+.brand-logo-pill {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background-color: #F3F6F4;
+  border: 1px solid #E8ECEA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+  padding: 9px;
+  box-sizing: border-box;
+}
+
+.brand-select-card:hover .brand-logo-pill {
+  background-color: #FFFFFF;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.brand-select-card.selected .brand-logo-pill {
+  background-color: #FFFFFF;
+  border-color: var(--secondary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+}
+
+.brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
