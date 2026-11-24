@@ -82,32 +82,38 @@ class QuickFixLocationService {
         ),
       );
 
-      // 4. Reverse geocode coordinates into human-readable Placemark
-      final placemarks = await placemarkFromCoordinates(
-        position.latitude,
-        position.longitude,
-      );
+      // 4. Reverse geocode coordinates into human-readable Placemark (Native Mobile only)
+      if (!kIsWeb) {
+        try {
+          final placemarks = await placemarkFromCoordinates(
+            position.latitude,
+            position.longitude,
+          );
 
-      if (placemarks.isNotEmpty) {
-        final place = placemarks.first;
-        final street = [place.street, place.subLocality].where((s) => s != null && s.isNotEmpty).join(', ');
-        final city = place.locality ?? place.subAdministrativeArea ?? 'Bengaluru';
-        final state = place.administrativeArea ?? 'Karnataka';
-        final postalCode = place.postalCode ?? '560038';
+          if (placemarks.isNotEmpty) {
+            final place = placemarks.first;
+            final street = [place.street, place.subLocality].where((s) => s != null && s.isNotEmpty).join(', ');
+            final city = place.locality ?? place.subAdministrativeArea ?? 'Bengaluru';
+            final state = place.administrativeArea ?? 'Karnataka';
+            final postalCode = place.postalCode ?? '560038';
 
-        return QuickFixLocationResult(
-          isSuccess: true,
-          flatOrPremises: place.name,
-          street: street.isNotEmpty ? street : '100 Feet Road, Indiranagar',
-          subLocality: place.subLocality ?? 'Indiranagar',
-          city: city,
-          state: state,
-          postalCode: postalCode,
-          latitude: position.latitude,
-          longitude: position.longitude,
-          isServiceable: true,
-          hubName: 'Bengaluru Central Cleanroom Hub',
-        );
+            return QuickFixLocationResult(
+              isSuccess: true,
+              flatOrPremises: place.name,
+              street: street.isNotEmpty ? street : '100 Feet Road, Indiranagar',
+              subLocality: place.subLocality ?? 'Indiranagar',
+              city: city,
+              state: state,
+              postalCode: postalCode,
+              latitude: position.latitude,
+              longitude: position.longitude,
+              isServiceable: true,
+              hubName: 'Bengaluru Central Cleanroom Hub',
+            );
+          }
+        } catch (_) {
+          // Native reverse geocode failed, fall through to default coordinates
+        }
       }
 
       // Fallback with coordinates if geocoding returns empty

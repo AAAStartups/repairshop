@@ -322,8 +322,8 @@ class _BrandSelectionScreenState extends ConsumerState<BrandSelectionScreen> {
                       LayoutBuilder(
                         builder: (context, constraints) {
                           final width = constraints.maxWidth;
-                          final int crossAxisCount = width > 850 ? 6 : (width > 550 ? 4 : 3);
-                          final double childAspectRatio = width > 850 ? 0.94 : (width > 550 ? 0.90 : 0.86);
+                          final int crossAxisCount = width > 850 ? 6 : (width > 550 ? 4 : (width > 380 ? 3 : 2));
+                          final double childAspectRatio = width > 850 ? 0.94 : (width > 550 ? 0.90 : 0.88);
 
                           return GridView.builder(
                             shrinkWrap: true,
