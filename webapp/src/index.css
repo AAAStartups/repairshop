@@ -29,11 +29,51 @@
   -webkit-font-smoothing: antialiased;
 }
 
-body {
+html, body {
   background-color: var(--canvas);
   color: var(--text-primary);
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
   overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.nav-location-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #121915;
+  border: 1px solid #1F2D27;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #E8ECEA;
+}
+
+@media (max-width: 768px) {
+  .nav-location-pill {
+    display: none !important;
+  }
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+  .nav-hide-mobile {
+    display: none !important;
+  }
 }
 
 /* Scrollbar */
@@ -135,12 +175,64 @@ body {
   gap: 4px;
 }
 
+/* Brand Selection Responsive Grids */
+.brand-grid-home {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (min-width: 520px) {
+  .brand-grid-home {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
+@media (min-width: 768px) {
+  .brand-grid-home {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .brand-grid-home {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+/* Modal Brands Grid */
+.brand-grid-modal {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+@media (min-width: 480px) {
+  .brand-grid-modal {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (min-width: 640px) {
+  .brand-grid-modal {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
 /* Brand Selection Cards */
 .brand-select-card {
   background-color: #FFFFFF;
-  border: 1.5px solid var(--card-border);
+  border: 2px solid var(--card-border);
   border-radius: 18px;
-  padding: 18px 12px;
+  padding: 16px 10px 12px 10px;
   text-align: center;
   cursor: pointer;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
@@ -148,38 +240,41 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   position: relative;
   user-select: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 154px;
 }
 
 .brand-select-card:hover {
-  transform: translateY(-2px) scale(1.03);
+  transform: translateY(-2px) scale(1.025);
   border-color: rgba(0, 58, 38, 0.45);
-  box-shadow: 0 8px 20px rgba(0, 58, 38, 0.08);
+  box-shadow: 0 10px 22px rgba(0, 58, 38, 0.09);
 }
 
 .brand-select-card.selected {
   background-color: var(--primary);
   border-color: var(--secondary);
-  border-width: 2.2px;
-  color: #FFFFFF;
-  box-shadow: 0 8px 24px rgba(0, 58, 38, 0.25);
+  box-shadow: 0 10px 24px rgba(0, 58, 38, 0.22);
 }
 
 .brand-logo-pill {
-  width: 52px;
-  height: 52px;
+  width: 54px;
+  height: 54px;
   border-radius: 16px;
-  background-color: #F3F6F4;
+  background-color: #F8FAF9;
   border: 1px solid #E8ECEA;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 10px;
   transition: all 0.2s ease;
-  padding: 9px;
+  padding: 10px;
   box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .brand-select-card:hover .brand-logo-pill {
@@ -190,12 +285,141 @@ body {
 .brand-select-card.selected .brand-logo-pill {
   background-color: #FFFFFF;
   border-color: var(--secondary);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
 }
 
 .brand-logo-img {
-  width: 100%;
-  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
   display: block;
+}
+
+.brand-info-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.brand-name-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--primary);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.brand-select-card.selected .brand-name-text {
+  color: #FFFFFF;
+}
+
+.brand-sub-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 9.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.brand-select-card.selected .brand-sub-text {
+  color: var(--secondary);
+}
+
+.brand-status-tag {
+  margin-top: auto;
+  font-family: 'Inter', sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--status-green);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.brand-select-card.selected .brand-status-tag {
+  color: var(--secondary);
+}
+
+.brand-check-badge {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: var(--secondary);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive container wrapper for sections */
+.section-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 360px) {
+  .section-container {
+    padding: 0 10px;
+  }
+  .brand-grid-home, .brand-grid-modal {
+    gap: 8px;
+  }
+  .brand-select-card {
+    padding: 12px 6px 10px 6px;
+    min-height: 142px;
+    border-radius: 14px;
+  }
+  .brand-logo-pill {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+  .brand-info-wrap {
+    min-height: 30px;
+    margin-bottom: 4px;
+  }
+  .brand-name-text {
+    font-size: 12px;
+  }
+  .brand-sub-text {
+    font-size: 9px;
+  }
+  .brand-status-tag {
+    font-size: 9.5px;
+  }
+}
+
+@media (min-width: 480px) {
+  .section-container {
+    padding: 0 24px;
+  }
 }

@@ -25,7 +25,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       position: 'sticky',
       top: 0,
       zIndex: 100,
-      padding: '14px 24px',
+      padding: '12px clamp(12px, 3vw, 24px)',
     }}>
       <div style={{
         maxWidth: 1200,
@@ -34,7 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: 16,
+        gap: 12,
       }}>
         {/* Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
@@ -63,17 +63,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Live Location Hub Pill */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          backgroundColor: '#121915',
-          border: '1px solid #1F2D27',
-          padding: '6px 14px',
-          borderRadius: 20,
-          fontSize: 12,
-          color: '#E8ECEA',
-        }}>
+        <div className="nav-location-pill">
           <div style={{
             width: 8,
             height: 8,
@@ -86,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Action Navigation */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div className="nav-actions">
           <button
             onClick={onOpenTrack}
             style={{
@@ -94,8 +84,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               border: '1px solid rgba(255,255,255,0.15)',
               color: '#FFFFFF',
               borderRadius: 10,
-              padding: '8px 14px',
-              fontSize: 13,
+              padding: '8px 12px',
+              fontSize: 12.5,
               fontWeight: 700,
               cursor: 'pointer',
               display: 'flex',
@@ -109,6 +99,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <button
             onClick={onOpenWarranty}
+            className="nav-hide-mobile"
             style={{
               background: 'transparent',
               border: '1px solid rgba(255,255,255,0.15)',
@@ -129,6 +120,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <button
             onClick={onOpenTechnician}
+            className="nav-hide-mobile"
             style={{
               background: 'rgba(0, 58, 38, 0.4)',
               border: '1px solid #003A26',
@@ -150,7 +142,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={onOpenBooking}
             className="btn-primary"
-            style={{ padding: '9px 18px', fontSize: 13 }}
+            style={{ padding: '8px 14px', fontSize: 12.5 }}
           >
             Book Free Pickup →
           </button>

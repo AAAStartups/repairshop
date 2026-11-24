@@ -220,7 +220,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onB
               <div style={{ fontSize: 13, color: '#5F6F67', marginBottom: 16 }}>
                 Select your smartphone or device manufacturer for verified OEM component matching:
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 14 }}>
+              <div className="brand-grid-modal">
                 {brands.map((b) => {
                   const isSelected = selectedBrand?.id === b.id;
                   return (
@@ -234,29 +234,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onB
                       title={`Select ${b.name}`}
                     >
                       {isSelected && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            top: 8,
-                            right: 8,
-                            width: 18,
-                            height: 18,
-                            borderRadius: '50%',
-                            backgroundColor: '#EDB000',
-                            color: '#003A26',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: 11,
-                            fontWeight: 900,
-                          }}
-                        >
-                          ✓
-                        </div>
+                        <div className="brand-check-badge">✓</div>
                       )}
                       <div className="brand-logo-pill">
                         <img
-                          src={b.logoAsset || `/assets/brands/${b.slug || b.id}.png`}
+                          src={b.logoAsset || `/assets/brands/${b.slug || b.id}.svg`}
                           alt={`${b.name} official logo`}
                           className="brand-logo-img"
                           onError={(e) => {
@@ -273,15 +255,15 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onB
                           }}
                         />
                       </div>
-                      <div style={{ fontSize: 13, fontWeight: 700 }}>{b.name}</div>
-                      {b.subtitle && (
-                        <div style={{ fontSize: 10, color: isSelected ? '#EDB000' : '#5F6F67', fontWeight: 600, marginTop: 1 }}>
-                          {b.subtitle}
-                        </div>
-                      )}
-                      <div style={{ fontSize: 10, color: isSelected ? '#EDB000' : '#10B981', marginTop: 4, fontWeight: 600 }}>
-                        OEM Parts ✓
+                      <div className="brand-info-wrap">
+                        <div className="brand-name-text">{b.name}</div>
+                        {b.subtitle ? (
+                          <div className="brand-sub-text">{b.subtitle}</div>
+                        ) : (
+                          <div style={{ height: 12 }} />
+                        )}
                       </div>
+                      <div className="brand-status-tag">OEM Parts ✓</div>
                     </div>
                   );
                 })}
@@ -308,7 +290,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, onB
                       style={{
                         padding: 16,
                         borderRadius: 16,
-                        border: isSelected ? '2px solid #EDB000' : '1px solid #E8ECEA',
+                        border: isSelected ? '2px solid #EDB000' : '2px solid #E8ECEA',
                         backgroundColor: isSelected ? '#003A26' : '#FFFFFF',
                         color: isSelected ? '#FFFFFF' : '#003A26',
                         cursor: 'pointer',

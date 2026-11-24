@@ -52,7 +52,7 @@ export const App: React.FC = () => {
       <section style={{
         background: 'linear-gradient(180deg, #080C0A 0%, #003A26 65%, #080C0A 100%)',
         color: 'white',
-        padding: '60px 24px 80px 24px',
+        padding: 'clamp(40px, 6vw, 60px) 16px clamp(50px, 8vw, 80px) 16px',
         position: 'relative',
         overflow: 'hidden',
       }}>
@@ -60,19 +60,22 @@ export const App: React.FC = () => {
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
+            justifyContent: 'center',
             gap: 8,
             backgroundColor: 'rgba(237, 176, 0, 0.12)',
             border: '1px solid #EDB000',
             color: '#EDB000',
             padding: '6px 14px',
             borderRadius: 20,
-            fontSize: 12,
+            fontSize: 'clamp(10px, 3vw, 12px)',
             fontWeight: 800,
             letterSpacing: '0.4px',
             marginBottom: 20,
+            maxWidth: '100%',
+            textAlign: 'center',
           }}>
             <Sparkles size={14} />
-            ZERO ADVANCE PAYMENT • 180-DAY DIAMOND WARRANTY
+            <span>ZERO ADVANCE PAYMENT • 180-DAY DIAMOND WARRANTY</span>
           </div>
 
           <h1 style={{
@@ -100,14 +103,14 @@ export const App: React.FC = () => {
             <button
               onClick={() => setIsBookingOpen(true)}
               className="btn-primary"
-              style={{ fontSize: 16, padding: '14px 32px' }}
+              style={{ fontSize: 16, padding: '14px clamp(16px, 4vw, 32px)', maxWidth: '100%' }}
             >
               Book Free Doorstep Pickup →
             </button>
             <button
               onClick={() => setIsTrackingOpen(true)}
               className="btn-secondary"
-              style={{ fontSize: 16, padding: '14px 28px', backgroundColor: 'transparent', color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
+              style={{ fontSize: 16, padding: '14px clamp(14px, 4vw, 28px)', maxWidth: '100%', backgroundColor: 'transparent', color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
             >
               <Clock size={16} color="#EDB000" />
               Track Active Repair #{activeOrderId}
@@ -147,8 +150,8 @@ export const App: React.FC = () => {
       </section>
 
       {/* POPULAR BRANDS SECTION */}
-      <section style={{ maxWidth: 1100, margin: '40px auto', padding: '0 24px', width: '100%' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 20 }}>
+      <section className="section-container">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 10, marginBottom: 20 }}>
           <div>
             <div style={{ fontSize: 12, fontWeight: 800, color: '#10B981', letterSpacing: '0.6px', textTransform: 'uppercase' }}>
               Genuine OEM Manufacturers
@@ -165,7 +168,7 @@ export const App: React.FC = () => {
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 14 }}>
+        <div className="brand-grid-home">
           {mockBrands.map((b) => (
             <div
               key={b.id}
@@ -175,7 +178,7 @@ export const App: React.FC = () => {
             >
               <div className="brand-logo-pill">
                 <img
-                  src={b.logoAsset || `/assets/brands/${b.slug || b.id}.png`}
+                  src={b.logoAsset || `/assets/brands/${b.slug || b.id}.svg`}
                   alt={`${b.name} official logo`}
                   className="brand-logo-img"
                   onError={(e) => {
@@ -192,19 +195,23 @@ export const App: React.FC = () => {
                   }}
                 />
               </div>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#003A26' }}>{b.name}</div>
-              {b.subtitle && (
-                <div style={{ fontSize: 10, color: '#5F6F67', fontWeight: 600, marginTop: 1 }}>{b.subtitle}</div>
-              )}
-              <div style={{ fontSize: 10, color: '#10B981', fontWeight: 700, marginTop: 4 }}>In Stock ✓</div>
+              <div className="brand-info-wrap">
+                <div className="brand-name-text">{b.name}</div>
+                {b.subtitle ? (
+                  <div className="brand-sub-text">{b.subtitle}</div>
+                ) : (
+                  <div style={{ height: 12 }} />
+                )}
+              </div>
+              <div className="brand-status-tag">In Stock ✓</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* POPULAR SERVICES GRID */}
-      <section style={{ maxWidth: 1100, margin: '20px auto 60px auto', padding: '0 24px', width: '100%' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 20 }}>
+      <section className="section-container" style={{ margin: '20px auto 60px auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 10, marginBottom: 20 }}>
           <div>
             <div style={{ fontSize: 12, fontWeight: 800, color: '#10B981', letterSpacing: '0.6px', textTransform: 'uppercase' }}>
               Precision Services
@@ -221,7 +228,7 @@ export const App: React.FC = () => {
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: 16 }}>
           {mockRepairs.map((r) => (
             <div
               key={r.id}

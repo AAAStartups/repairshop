@@ -1,7 +1,7 @@
 const API_BASE =
   (import.meta as any).env?.VITE_API_BASE_URL ||
   (typeof window !== 'undefined' && window.location.hostname === 'localhost'
-    ? 'http://localhost:5001/api'
+    ? 'http://localhost:5000/api'
     : '/api');
 
 export interface Brand {
@@ -56,18 +56,18 @@ export interface BookingPayload {
 
 // Fallback Mock Data matching Flutter App
 export const mockBrands: Brand[] = [
-  { id: 'apple', name: 'Apple', slug: 'apple', logoAsset: '/assets/brands/apple.png', popularity: 100 },
-  { id: 'samsung', name: 'Samsung', slug: 'samsung', logoAsset: '/assets/brands/samsung.png', popularity: 95 },
-  { id: 'xiaomi', name: 'Xiaomi', slug: 'xiaomi', subtitle: 'Redmi / Mi', logoAsset: '/assets/brands/xiaomi.png', popularity: 88 },
-  { id: 'oneplus', name: 'OnePlus', slug: 'oneplus', logoAsset: '/assets/brands/oneplus.png', popularity: 90 },
-  { id: 'pixel', name: 'Google Pixel', slug: 'pixel', logoAsset: '/assets/brands/pixel.png', popularity: 85 },
-  { id: 'vivo', name: 'Vivo', slug: 'vivo', logoAsset: '/assets/brands/vivo.png', popularity: 75 },
-  { id: 'oppo', name: 'Oppo', slug: 'oppo', logoAsset: '/assets/brands/oppo.png', popularity: 72 },
-  { id: 'realme', name: 'Realme', slug: 'realme', logoAsset: '/assets/brands/realme.png', popularity: 70 },
-  { id: 'motorola', name: 'Motorola', slug: 'motorola', logoAsset: '/assets/brands/motorola.png', popularity: 68 },
-  { id: 'nothing', name: 'Nothing', slug: 'nothing', logoAsset: '/assets/brands/nothing.png', popularity: 65 },
-  { id: 'huawei', name: 'Huawei', slug: 'huawei', logoAsset: '/assets/brands/huawei.png', popularity: 60 },
-  { id: 'nokia', name: 'Nokia', slug: 'nokia', logoAsset: '/assets/brands/nokia.png', popularity: 55 },
+  { id: 'apple', name: 'Apple', slug: 'apple', logoAsset: '/assets/brands/apple.svg', popularity: 100 },
+  { id: 'samsung', name: 'Samsung', slug: 'samsung', logoAsset: '/assets/brands/samsung.svg', popularity: 95 },
+  { id: 'xiaomi', name: 'Xiaomi', slug: 'xiaomi', subtitle: 'Redmi / Mi', logoAsset: '/assets/brands/xiaomi.svg', popularity: 88 },
+  { id: 'oneplus', name: 'OnePlus', slug: 'oneplus', logoAsset: '/assets/brands/oneplus.svg', popularity: 90 },
+  { id: 'pixel', name: 'Google Pixel', slug: 'pixel', logoAsset: '/assets/brands/pixel.svg', popularity: 85 },
+  { id: 'vivo', name: 'Vivo', slug: 'vivo', logoAsset: '/assets/brands/vivo.svg', popularity: 75 },
+  { id: 'oppo', name: 'Oppo', slug: 'oppo', logoAsset: '/assets/brands/oppo.svg', popularity: 72 },
+  { id: 'realme', name: 'Realme', slug: 'realme', logoAsset: '/assets/brands/realme.svg', popularity: 70 },
+  { id: 'motorola', name: 'Motorola', slug: 'motorola', logoAsset: '/assets/brands/motorola.svg', popularity: 68 },
+  { id: 'nothing', name: 'Nothing', slug: 'nothing', logoAsset: '/assets/brands/nothing.svg', popularity: 65 },
+  { id: 'huawei', name: 'Huawei', slug: 'huawei', logoAsset: '/assets/brands/huawei.svg', popularity: 60 },
+  { id: 'nokia', name: 'Nokia', slug: 'nokia', logoAsset: '/assets/brands/nokia.svg', popularity: 55 },
 ];
 
 export const mockModelsByBrand: Record<string, DeviceModel[]> = {
@@ -200,7 +200,13 @@ export const apiClient = {
       const res = await fetch(`${API_BASE}/catalog/brands`);
       if (res.ok) {
         const data = await res.json();
-        if (data.success && data.brands?.length) return data.brands;
+        if (data.success && data.brands?.length) {
+          return data.brands.map((b: any) => ({
+            ...b,
+            logoAsset: b.logoAsset || `/assets/brands/${b.slug || b.id}.svg`,
+            subtitle: b.slug === 'xiaomi' ? 'Redmi / Mi' : b.subtitle,
+          }));
+        }
       }
     } catch (_) {}
     return mockBrands;
