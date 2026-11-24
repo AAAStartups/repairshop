@@ -1,4 +1,8 @@
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE =
+  (import.meta as any).env?.VITE_API_BASE_URL ||
+  (typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:5000/api'
+    : '/api');
 
 export interface Brand {
   id: string;
