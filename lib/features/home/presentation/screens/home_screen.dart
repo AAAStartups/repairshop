@@ -1124,23 +1124,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
 
-                  // Rating pill
-                  Row(
-                    children: [
-                      Text(
-                        svc['rating'] as String,
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFFEDB000),
-                        ),
-                      ),
-                    ],
+                  // Starting from pricing label
+                  const Text(
+                    'Starting from',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF5F6F67),
+                      letterSpacing: 0.1,
+                    ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 2),
 
                   // Price Row
                   Row(
