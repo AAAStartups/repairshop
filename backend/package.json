@@ -14,11 +14,18 @@
     "prisma:push": "prisma db push",
     "prisma:seed": "tsx prisma/seed.ts"
   },
-  "keywords": ["quickfix", "repair", "device-care", "express", "prisma"],
+  "keywords": [
+    "quickfix",
+    "repair",
+    "device-care",
+    "express",
+    "prisma"
+  ],
   "author": "QuickFix Engineering",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.22.0",
+    "cloudinary": "^2.11.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
