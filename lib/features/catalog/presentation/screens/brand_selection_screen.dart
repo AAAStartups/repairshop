@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../booking/presentation/controllers/booking_flow_controller.dart';
 import '../../../../core/widgets/qf_pressable.dart';
 import '../../../../core/widgets/qf_step_indicator.dart';
+import '../../data/catalog_repository.dart';
 import '../../domain/models/brand_model.dart';
 
 class BrandSelectionScreen extends ConsumerStatefulWidget {
@@ -17,13 +18,16 @@ class _BrandSelectionScreenState extends ConsumerState<BrandSelectionScreen> {
   String _search = '';
   String? _selectedId;
 
-  List<BrandModel> get _filtered => mockBrands
+  List<BrandModel> _getFiltered(List<BrandModel> allBrands) => allBrands
       .where((b) => b.name.toLowerCase().contains(_search.toLowerCase()))
       .toList();
 
   @override
   Widget build(BuildContext context) {
-    final popularBrands = mockBrands.where((b) => b.isPopular).toList();
+    final brandsAsync = ref.watch(brandsListProvider);
+    final allBrands = brandsAsync.valueOrNull ?? mockBrands;
+    final popularBrands = allBrands.where((b) => b.isPopular).toList();
+    final filtered = _getFiltered(allBrands);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F5),
@@ -251,7 +255,7 @@ class _BrandSelectionScreenState extends ConsumerState<BrandSelectionScreen> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            _search.isEmpty ? 'ALL SUPPORTED BRANDS' : 'SEARCH RESULTS (${_filtered.length})',
+                            _search.isEmpty ? 'ALL SUPPORTED BRANDS' : 'SEARCH RESULTS (${filtered.length})',
                             style: const TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 11,
@@ -291,9 +295,9 @@ class _BrandSelectionScreenState extends ConsumerState<BrandSelectionScreen> {
                       crossAxisSpacing: 10,
                       childAspectRatio: 0.88,
                     ),
-                    itemCount: _filtered.length,
+                    itemCount: filtered.length,
                     itemBuilder: (context, index) {
-                      final brand = _filtered[index];
+                      final brand = filtered[index];
                       final isSelected = _selectedId == brand.id;
 
                       return QFPressable(

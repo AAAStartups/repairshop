@@ -17,6 +17,9 @@ dependencies:
   # Navigation
   go_router: ^14.2.0
 
+  # Networking & API
+  dio: ^5.7.0
+
   # Fonts & UI
   google_fonts: ^6.2.1
   flutter_svg: ^2.0.10+1

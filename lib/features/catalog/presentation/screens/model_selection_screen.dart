@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../booking/presentation/controllers/booking_flow_controller.dart';
 import '../../../../core/widgets/qf_pressable.dart';
 import '../../../../core/widgets/qf_step_indicator.dart';
+import '../../data/catalog_repository.dart';
 import '../../domain/models/device_model.dart';
 
 class ModelSelectionScreen extends ConsumerStatefulWidget {
@@ -23,7 +24,8 @@ class _ModelSelectionScreenState extends ConsumerState<ModelSelectionScreen> {
     final draft = ref.watch(bookingFlowProvider);
     final brandId = draft.brandId ?? 'apple';
     final brandName = draft.brandName ?? 'Apple';
-    final models = mockDevicesByBrand[brandId] ?? [];
+    final modelsAsync = ref.watch(deviceModelsListProvider(brandId));
+    final models = modelsAsync.valueOrNull ?? (mockDevicesByBrand[brandId] ?? []);
 
     // Extract all unique series for the filter rail
     final seriesSet = <String>{'All'};

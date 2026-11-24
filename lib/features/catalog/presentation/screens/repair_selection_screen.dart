@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../booking/presentation/controllers/booking_flow_controller.dart';
 import '../../../../core/widgets/qf_pressable.dart';
 import '../../../../core/widgets/qf_step_indicator.dart';
+import '../../data/catalog_repository.dart';
 import '../../domain/models/repair_service_model.dart';
 
 class RepairSelectionScreen extends ConsumerWidget {
@@ -15,6 +16,8 @@ class RepairSelectionScreen extends ConsumerWidget {
     final selectedIds = draft.selectedServiceIds;
     final brandName = draft.brandName ?? 'Apple';
     final modelName = draft.modelName ?? 'Device';
+    final repairsAsync = ref.watch(repairServicesListProvider(draft.modelId ?? 'default'));
+    final services = repairsAsync.valueOrNull ?? mockRepairServices;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F5),
@@ -125,10 +128,10 @@ class RepairSelectionScreen extends ConsumerWidget {
               child: ListView.separated(
                 padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
                 physics: const BouncingScrollPhysics(),
-                itemCount: mockRepairServices.length,
+                itemCount: services.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
-                  final service = mockRepairServices[index];
+                  final service = services[index];
                   final isSelected = selectedIds.contains(service.id);
 
                   return QFPressable(

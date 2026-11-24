@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../controllers/booking_flow_controller.dart';
+import '../../data/booking_repository.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../../core/widgets/qf_pressable.dart';
 
@@ -492,10 +493,12 @@ class BookingSummaryScreen extends ConsumerWidget {
                 Expanded(
                   flex: 3,
                   child: QFPressable(
-                    onTap: () {
+                    onTap: () async {
                       if (auth.isAuthenticated) {
-                        final bookingId = 'QF-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
-                        context.go('/booking-success/$bookingId');
+                        final result = await ref.read(bookingRepositoryProvider).submitBooking(draft);
+                        if (context.mounted) {
+                          context.go('/booking-success/${result.bookingNumber}');
+                        }
                       } else {
                         _showAuthSheet(context, ref);
                       }
@@ -927,9 +930,12 @@ class _AuthBottomSheetState extends ConsumerState<_AuthBottomSheet> {
                     : () async {
                         final success = await ref.read(authProvider.notifier).verifyOtp(_otpCtrl.text);
                         if (success && context.mounted) {
-                          Navigator.pop(context);
-                          final bookingId = 'QF-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
-                          context.go('/booking-success/$bookingId');
+                          final draft = ref.read(bookingFlowProvider);
+                          final result = await ref.read(bookingRepositoryProvider).submitBooking(draft);
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                            context.go('/booking-success/${result.bookingNumber}');
+                          }
                         }
                       },
                 child: Container(

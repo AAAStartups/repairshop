@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String      @id @default(uuid())
+  phoneNumber  String      @unique
+  fullName     String?
+  email        String?     @unique
+  role         String      @default("CUSTOMER") // CUSTOMER, TECHNICIAN, ADMIN
+  avatarUrl    String?
+  isVerified   Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  addresses    Address[]
+  bookings     Booking[]
+}
+
+model Address {
+  id           String      @id @default(uuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label        String      @default("Home") // Home, Work, Other
+  addressLine1 String
+  addressLine2 String?
+  city         String      @default("Bengaluru")
+  state        String      @default("Karnataka")
+  postalCode   String
+  latitude     Float?
+  longitude    Float?
+  isDefault    Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  bookings     Booking[]
+}
+
+model Brand {
+  id           String      @id @default(uuid())
+  name         String      @unique
+  slug         String      @unique
+  logoUrl      String?
+  country      String?
+  popularity   Int         @default(0)
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  models       DeviceModel[]
+}
+
+model DeviceModel {
+  id           String      @id @default(uuid())
+  brandId      String
+  brand        Brand       @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  name         String
+  slug         String      @unique
+  series       String      // e.g. "Number Series", "Note Series", "Pro Series"
+  releaseYear  Int         @default(2024)
+  imageUrl     String?
+  hasOemParts  Boolean     @default(true)
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  repairs      RepairService[]
+  bookings     Booking[]
+}
+
+model RepairService {
+  id                String      @id @default(uuid())
+  modelId           String
+  model             DeviceModel @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  title             String      // e.g. "OEM Display & Glass Replacement"
+  category          String      // SCREEN, BATTERY, CHARGING, CAMERA, BACK_GLASS, MOTHERBOARD, WATER_DAMAGE
+  description       String
+  price             Float       // in INR (e.g. 3499.00)
+  turnaroundMinutes Int         @default(120) // e.g. 120 mins = 2 hrs
+  warrantyDays      Int         @default(180) // 180-day warranty
+  badge             String?     // e.g. "Most Popular", "OEM Certified"
+  isPopular         Boolean     @default(false)
+  isActive          Boolean     @default(true)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  bookingItems      BookingRepairItem[]
+}
+
+model Booking {
+  id               String              @id @default(uuid())
+  bookingNumber    String              @unique // e.g. "QF-2026-8921"
+  userId           String
+  user             User                @relation(fields: [userId], references: [id])
+  deviceModelId    String
+  deviceModel      DeviceModel         @relation(fields: [deviceModelId], references: [id])
+  addressId        String
+  address          Address             @relation(fields: [addressId], references: [id])
+  
+  scheduledDate    DateTime
+  timeSlot         String              // e.g. "10:00 AM - 12:00 PM"
+  problemNotes     String?
+  deviceImagesJson String?             // JSON array of image URLs
+  
+  status           String              @default("BOOKING_CONFIRMED") 
+  // Stages:
+  // 1: BOOKING_CONFIRMED
+  // 2: TECH_ASSIGNED
+  // 3: EN_ROUTE_TO_PICKUP
+  // 4: PICKUP_INSPECTION
+  // 5: DEVICE_SEALED
+  // 6: IN_TRANSIT_TO_LAB
+  // 7: LAB_DIAGNOSTICS
+  // 8: REPAIR_IN_PROGRESS
+  // 9: QC_TESTING
+  // 10: DISPATCHED_FOR_RETURN
+  // 11: DELIVERED_AND_VERIFIED
+  // 12: PAYMENT_COMPLETED
+
+  totalAmount      Float
+  advancePaid      Float               @default(0.0) // QuickFix Zero Advance Guarantee
+  paymentStatus    String              @default("PENDING") // PENDING, PAID, REFUNDED
+  paymentMethod    String?             // UPI, CASH, CARD
+  
+  assignedTechId   String?
+  assignedTech     Technician?         @relation(fields: [assignedTechId], references: [id])
+
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  repairItems      BookingRepairItem[]
+  timelineEvents   OrderTimelineEvent[]
+}
+
+model BookingRepairItem {
+  id              String        @id @default(uuid())
+  bookingId       String
+  booking         Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  repairServiceId String
+  repairService   RepairService @relation(fields: [repairServiceId], references: [id])
+  priceAtBooking  Float
+  warrantyDays    Int
+}
+
+model OrderTimelineEvent {
+  id          String   @id @default(uuid())
+  bookingId   String
+  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  stageIndex  Int      // 1 to 12
+  stageCode   String   // e.g. "LAB_DIAGNOSTICS"
+  title       String   // e.g. "42-Point Automated Lab Diagnostic"
+  description String   // Detailed update
+  isCompleted Boolean  @default(false)
+  isCurrent   Boolean  @default(false)
+  timestamp   DateTime @default(now())
+}
+
+model Technician {
+  id           String    @id @default(uuid())
+  fullName     String
+  phoneNumber  String    @unique
+  avatarUrl    String?
+  rating       Float     @default(4.9)
+  totalJobs    Int       @default(0)
+  vehicleType  String?   // Electric Scooter / QuickFix Van
+  currentLat   Float?
+  currentLng   Float?
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  bookings     Booking[]
+}

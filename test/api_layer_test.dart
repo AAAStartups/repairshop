@@ -1,0 +1,43 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:quickfix/core/network/api_client.dart';
+import 'package:quickfix/features/catalog/data/catalog_repository.dart';
+import 'package:quickfix/features/booking/data/booking_repository.dart';
+import 'package:quickfix/features/booking/domain/models/booking_draft.dart';
+
+void main() {
+  group('QuickFix API Layer & Repository Tests', () {
+    test('CatalogRepository returns offline mock brands gracefully', () async {
+      final client = ApiClient(customBaseUrl: 'http://localhost:59999/api'); // unreachable
+      final repo = CatalogRepository(client);
+
+      final brands = await repo.fetchBrands();
+      expect(brands, isNotEmpty);
+      expect(brands.any((b) => b.id == 'apple'), isTrue);
+      expect(brands.any((b) => b.id == 'xiaomi'), isTrue);
+    });
+
+    test('BookingRepository creates booking with zero-advance policy', () async {
+      final client = ApiClient(customBaseUrl: 'http://localhost:59999/api'); // unreachable
+      final repo = BookingRepository(client);
+
+      const draft = BookingDraft(
+        brandId: 'apple',
+        brandName: 'Apple',
+        modelId: 'iphone15pro',
+        modelName: 'iPhone 15 Pro',
+        selectedServiceIds: ['screen_replacement'],
+        estimatedCost: 3899.0,
+        flatNo: '#402',
+        streetAddress: 'Green Glen Layout',
+        city: 'Bengaluru',
+        pincode: '560103',
+        pickupTimeSlot: '10:00 AM - 12:00 PM',
+      );
+
+      final result = await repo.submitBooking(draft);
+      expect(result.isSuccess, isTrue);
+      expect(result.bookingNumber, startsWith('QF-'));
+      expect(result.totalAmount, equals(3899.0));
+    });
+  });
+}
