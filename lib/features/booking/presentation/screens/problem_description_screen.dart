@@ -1,6 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../../core/network/api_client.dart';
+import '../../../../core/network/api_endpoints.dart';
 import '../controllers/booking_flow_controller.dart';
 import '../../../../core/widgets/qf_pressable.dart';
 import '../../../../core/widgets/qf_step_indicator.dart';
@@ -15,6 +19,7 @@ class ProblemDescriptionScreen extends ConsumerStatefulWidget {
 class _ProblemDescriptionScreenState extends ConsumerState<ProblemDescriptionScreen> {
   final _controller = TextEditingController();
   final List<String> _photos = [];
+  bool _isUploadingPhoto = false;
 
   final List<Map<String, String>> _quickTips = [
     {'emoji': '📱', 'text': 'Screen cracked after drop'},
@@ -24,6 +29,60 @@ class _ProblemDescriptionScreenState extends ConsumerState<ProblemDescriptionScr
     {'emoji': '🔇', 'text': 'Earpiece volume is extremely low'},
     {'emoji': '📷', 'text': 'Back camera focus shaking / blurry'},
   ];
+
+  Future<void> _pickAndUploadPhoto() async {
+    try {
+      final picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1200,
+        maxHeight: 1200,
+        imageQuality: 80,
+      );
+
+      if (image == null) return;
+
+      setState(() => _isUploadingPhoto = true);
+
+      final bytes = await image.readAsBytes();
+      final base64Image = base64Encode(bytes);
+      final fileName = image.name.isNotEmpty ? image.name : 'diagnostic_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      final client = ref.read(apiClientProvider);
+      final res = await client.post(
+        ApiEndpoints.storageUpload,
+        data: {
+          'fileName': fileName,
+          'fileData': base64Image,
+          'contentType': image.mimeType ?? 'image/jpeg',
+        },
+      );
+
+      if (res.statusCode == 200 && res.data['success'] == true) {
+        final publicUrl = res.data['url'] as String;
+        setState(() {
+          _photos.add(publicUrl);
+        });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('✓ Diagnostic photo uploaded to cloud storage!'),
+              backgroundColor: Color(0xFF003A26),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } else {
+        setState(() {
+          _photos.add(image.path);
+        });
+      }
+    } catch (e) {
+      debugPrint('Photo upload error: $e');
+    } finally {
+      if (mounted) setState(() => _isUploadingPhoto = false);
+    }
+  }
 
   @override
   void initState() {
@@ -306,48 +365,93 @@ class _ProblemDescriptionScreenState extends ConsumerState<ProblemDescriptionScr
                           ),
                         ),
                         const SizedBox(height: 14),
-                        Row(
-                          children: [
-                            QFPressable(
-                              onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Sample diagnostic photo attached ✓'),
-                                    backgroundColor: Color(0xFF003A26),
-                                  ),
-                                );
-                              },
-                              pressedScale: 0.94,
-                              child: Container(
-                                width: 76,
-                                height: 76,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF4F6F5),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: const Color(0xFF003A26).withValues(alpha: 0.3),
-                                    width: 1.5,
-                                  ),
-                                ),
-                                child: const Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              ..._photos.asMap().entries.map((entry) {
+                                final index = entry.key;
+                                final url = entry.value;
+                                return Stack(
                                   children: [
-                                    Icon(Icons.add_a_photo_outlined, color: Color(0xFF003A26), size: 24),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      'Add Photo',
-                                      style: TextStyle(
-                                        fontFamily: 'Inter',
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w700,
-                                        color: Color(0xFF003A26),
+                                    Container(
+                                      width: 76,
+                                      height: 76,
+                                      margin: const EdgeInsets.only(right: 12),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFF4F6F5),
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(color: const Color(0xFF003A26), width: 1.5),
+                                        image: url.startsWith('http')
+                                            ? DecorationImage(image: NetworkImage(url), fit: BoxFit.cover)
+                                            : null,
+                                      ),
+                                      child: !url.startsWith('http')
+                                          ? const Center(child: Icon(Icons.photo_rounded, color: Color(0xFF003A26)))
+                                          : null,
+                                    ),
+                                    Positioned(
+                                      top: 4,
+                                      right: 16,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() => _photos.removeAt(index));
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.all(3),
+                                          decoration: const BoxDecoration(
+                                            color: Colors.black54,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(Icons.close_rounded, size: 14, color: Colors.white),
+                                        ),
                                       ),
                                     ),
                                   ],
+                                );
+                              }),
+                              QFPressable(
+                                onTap: _isUploadingPhoto ? null : _pickAndUploadPhoto,
+                                pressedScale: 0.94,
+                                child: Container(
+                                  width: 76,
+                                  height: 76,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF4F6F5),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: const Color(0xFF003A26).withValues(alpha: 0.3),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: _isUploadingPhoto
+                                      ? const Center(
+                                          child: SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF003A26)),
+                                          ),
+                                        )
+                                      : const Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.add_a_photo_outlined, color: Color(0xFF003A26), size: 24),
+                                            SizedBox(height: 4),
+                                            Text(
+                                              'Add Photo',
+                                              style: TextStyle(
+                                                fontFamily: 'Inter',
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w700,
+                                                color: Color(0xFF003A26),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),

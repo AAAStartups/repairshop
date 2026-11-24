@@ -22,4 +22,7 @@ class ApiEndpoints {
   static const String bookings = '/bookings';
   static String trackOrder(String orderId) => '/orders/$orderId/track';
   static String advanceOrderStage(String orderId) => '/orders/$orderId/advance-stage';
+
+  // Cloud Storage
+  static const String storageUpload = '/storage/upload';
 }

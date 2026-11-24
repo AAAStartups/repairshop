@@ -2,7 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 
-if (process.env.VERCEL) {
+// If using SQLite locally or in test fallback
+if (process.env.VERCEL && process.env.DATABASE_URL?.startsWith("file:")) {
   try {
     const tmpDb = path.join("/tmp", "dev.db");
     const sourceDb = path.join(process.cwd(), "prisma", "dev.db");
