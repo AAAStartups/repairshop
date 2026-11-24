@@ -98321,12 +98321,13 @@ $S:0}
 A.au8.prototype={
 $2(a,b){var s,r,q,p=null,o=b.b,n=o>850
 if(n)s=6
-else s=o>550?4:3
-if(n)r=0.94
-else r=o>550?0.9:0.86
+else if(o>550)s=4
+else{r=o>380?3:2
+s=r}if(n)q=0.94
+else q=o>550?0.9:0.88
 n=this.b
-q=J.cy(n)
-return new A.wl(new A.ap5(s,10,10,r),new A.y0(new A.atX(this.a,n),q,!0,!0,!0,A.aLP(),p),p,B.Z,!1,p,p,B.SZ,!0,p,p,q,B.a3,p,p,B.x,B.aI,p)},
+r=J.cy(n)
+return new A.wl(new A.ap5(s,10,10,q),new A.y0(new A.atX(this.a,n),r,!0,!0,!0,A.aLP(),p),p,B.Z,!1,p,p,B.SZ,!0,p,p,r,B.a3,p,p,B.x,B.aI,p)},
 $S:665}
 A.atX.prototype={
 $2(a,b){var s,r,q,p,o,n,m,l,k,j,i,h=null,g=J.c3(this.b,b),f=this.a,e=g.a,d=f.x===e,c=f.y==="grid_"+e

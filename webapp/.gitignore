@@ -1,7 +1,2 @@
 node_modules/
-dist/
-dist-ssr/
-*.local
-.env.local
 .vercel
-_react_backup/
