@@ -83,7 +83,7 @@ class _PickupAddressScreenState extends ConsumerState<PickupAddressScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Detected: ${result.subLocality ?? result.city} (${result.postalCode}) • ${result.hubName ?? 'Active Hub'}',
+                  '📍 Detected: ${result.subLocality ?? result.city} (${result.postalCode}) • ${result.hubName ?? 'Active Hub'}',
                   style: const TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w600, fontSize: 12),
                 ),
               ),

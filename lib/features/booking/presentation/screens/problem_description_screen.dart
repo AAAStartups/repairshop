@@ -21,13 +21,13 @@ class _ProblemDescriptionScreenState extends ConsumerState<ProblemDescriptionScr
   final List<String> _photos = [];
   bool _isUploadingPhoto = false;
 
-  final List<Map<String, dynamic>> _quickTips = [
-    {'icon': Icons.smartphone_rounded, 'text': 'Screen cracked after drop'},
-    {'icon': Icons.battery_alert_rounded, 'text': 'Battery draining abnormally fast'},
-    {'icon': Icons.water_drop_rounded, 'text': 'Accidental liquid spill / water'},
-    {'icon': Icons.power_rounded, 'text': 'Loose cable or slow charge'},
-    {'icon': Icons.volume_off_rounded, 'text': 'Earpiece volume is extremely low'},
-    {'icon': Icons.photo_camera_rounded, 'text': 'Back camera focus shaking / blurry'},
+  final List<Map<String, String>> _quickTips = [
+    {'emoji': '📱', 'text': 'Screen cracked after drop'},
+    {'emoji': '🔋', 'text': 'Battery draining abnormally fast'},
+    {'emoji': '🌊', 'text': 'Accidental liquid spill / water'},
+    {'emoji': '🔌', 'text': 'Loose cable or slow charge'},
+    {'emoji': '🔇', 'text': 'Earpiece volume is extremely low'},
+    {'emoji': '📷', 'text': 'Back camera focus shaking / blurry'},
   ];
 
   Future<void> _pickAndUploadPhoto() async {
@@ -66,13 +66,7 @@ class _ProblemDescriptionScreenState extends ConsumerState<ProblemDescriptionScr
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Row(
-                children: [
-                  Icon(Icons.check_circle_rounded, color: Color(0xFFEDB000), size: 18),
-                  SizedBox(width: 8),
-                  Text('Diagnostic photo uploaded to cloud storage!'),
-                ],
-              ),
+              content: Text('✓ Diagnostic photo uploaded to cloud storage!'),
               backgroundColor: Color(0xFF003A26),
               duration: Duration(seconds: 2),
             ),
@@ -233,11 +227,10 @@ class _ProblemDescriptionScreenState extends ConsumerState<ProblemDescriptionScr
                             return QFPressable(
                               onTap: () {
                                 setState(() {
-                                  final tipText = tip['text'] as String;
                                   if (_controller.text.isEmpty) {
-                                    _controller.text = tipText;
+                                    _controller.text = tip['text']!;
                                   } else {
-                                    _controller.text = '${_controller.text}, $tipText';
+                                    _controller.text = '${_controller.text}, ${tip['text']}';
                                   }
                                 });
                               },
@@ -252,14 +245,10 @@ class _ProblemDescriptionScreenState extends ConsumerState<ProblemDescriptionScr
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(
-                                      tip['icon'] as IconData,
-                                      size: 15,
-                                      color: const Color(0xFF003A26),
-                                    ),
+                                    Text(tip['emoji']!, style: const TextStyle(fontSize: 14)),
                                     const SizedBox(width: 6),
                                     Text(
-                                      tip['text'] as String,
+                                      tip['text']!,
                                       style: const TextStyle(
                                         fontFamily: 'Inter',
                                         fontSize: 12,

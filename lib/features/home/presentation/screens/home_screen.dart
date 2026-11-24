@@ -1024,34 +1024,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   decoration: BoxDecoration(
                     color: bgColor,
                   ),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.asset(
-                        svc.imageAsset,
-                        height: 138,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Center(
-                          child: _buildServiceCardArtwork(artworkType),
-                        ),
-                      ),
-                      // Soft gradient overlay at top to ensure badges remain perfectly readable
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black.withValues(alpha: 0.55),
-                              Colors.black.withValues(alpha: 0.1),
-                              Colors.transparent,
-                            ],
-                            stops: const [0.0, 0.4, 1.0],
-                          ),
-                        ),
-                      ),
-                    ],
+                  child: Center(
+                    child: _buildServiceCardArtwork(artworkType),
                   ),
                 ),
 

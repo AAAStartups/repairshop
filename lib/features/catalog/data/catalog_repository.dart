@@ -50,6 +50,7 @@ class CatalogRepository {
             name: name,
             subtitle: isXiaomi ? 'Redmi / Mi' : null,
             logoAsset: 'assets/brands/$slug.png',
+            logoEmoji: _getEmojiForBrand(name),
             isPopular: (b['popularity'] ?? 0) >= 80,
           );
         }).toList();
@@ -97,7 +98,7 @@ class CatalogRepository {
             id: r['id'].toString(),
             name: r['title'] ?? '',
             description: r['description'] ?? '',
-            category: r['category'],
+            iconEmoji: _getEmojiForCategory(r['category'] ?? ''),
             estimatedPrice: (r['price'] as num?)?.toDouble(),
             estimatedTime: '${(r['turnaroundMinutes'] ?? 120) ~/ 60} hrs',
             warrantyPeriod: '${(r['warrantyDays'] ?? 180) ~/ 30} months',
@@ -121,6 +122,7 @@ class CatalogRepository {
             id: r['id'].toString(),
             name: r['title'] ?? '',
             description: r['description'] ?? '',
+            iconEmoji: _getEmojiForCategory(r['category'] ?? ''),
             estimatedPrice: (r['price'] as num?)?.toDouble(),
             estimatedTime: '${(r['turnaroundMinutes'] ?? 120) ~/ 60} hrs',
             warrantyPeriod: '${(r['warrantyDays'] ?? 180) ~/ 30} months',
@@ -136,5 +138,41 @@ class CatalogRepository {
       // Return empty list on network error
     }
     return [];
+  }
+
+  String _getEmojiForBrand(String name) {
+    final lower = name.toLowerCase();
+    if (lower.contains('apple')) return '🍎';
+    if (lower.contains('samsung')) return '📱';
+    if (lower.contains('oneplus')) return '🔴';
+    if (lower.contains('xiaomi')) return '⬛';
+    if (lower.contains('pixel')) return '🌈';
+    if (lower.contains('vivo')) return '💙';
+    if (lower.contains('realme')) return '⚡';
+    if (lower.contains('nothing')) return '⚪';
+    if (lower.contains('huawei')) return '🔴';
+    if (lower.contains('nokia')) return '🔷';
+    if (lower.contains('motorola')) return '🌀';
+    if (lower.contains('oppo')) return '💚';
+    return '📱';
+  }
+
+  String _getEmojiForCategory(String cat) {
+    switch (cat.toUpperCase()) {
+      case 'SCREEN':
+        return '📱';
+      case 'BATTERY':
+        return '🔋';
+      case 'CHARGING':
+        return '⚡';
+      case 'CAMERA':
+        return '📷';
+      case 'BACK_GLASS':
+        return '🪟';
+      case 'WATER_DAMAGE':
+        return '💧';
+      default:
+        return '🔧';
+    }
   }
 }

@@ -167,34 +167,20 @@ class RepairSelectionScreen extends ConsumerWidget {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Natural Workshop Repair Photo Thumbnail
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(14),
-                            child: Container(
-                              width: 52,
-                              height: 52,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF3F6F4),
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                  color: isSelected
-                                      ? const Color(0xFFEDB000)
-                                      : const Color(0xFFE8ECEA),
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: Image.asset(
-                                service.imageAsset,
-                                width: 52,
-                                height: 52,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Center(
-                                  child: Icon(
-                                    service.iconData,
-                                    color: const Color(0xFF003A26),
-                                    size: 24,
-                                  ),
-                                ),
+                          // Emoji / Service Icon Badge
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? const Color(0xFF003A26)
+                                  : const Color(0xFFF3F6F4),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Center(
+                              child: Text(
+                                service.iconEmoji,
+                                style: const TextStyle(fontSize: 24),
                               ),
                             ),
                           ),
@@ -303,25 +289,14 @@ class RepairSelectionScreen extends ConsumerWidget {
                                           color: const Color(0xFF10B981).withValues(alpha: 0.12),
                                           borderRadius: BorderRadius.circular(8),
                                         ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Icon(
-                                              Icons.verified_user_rounded,
-                                              size: 12,
-                                              color: Color(0xFF065F46),
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              service.warrantyPeriod!,
-                                              style: const TextStyle(
-                                                fontFamily: 'Inter',
-                                                fontSize: 10.5,
-                                                fontWeight: FontWeight.w700,
-                                                color: Color(0xFF065F46),
-                                              ),
-                                            ),
-                                          ],
+                                        child: Text(
+                                          '🛡 ${service.warrantyPeriod}',
+                                          style: const TextStyle(
+                                            fontFamily: 'Inter',
+                                            fontSize: 10.5,
+                                            fontWeight: FontWeight.w700,
+                                            color: Color(0xFF065F46),
+                                          ),
                                         ),
                                       ),
                                   ],

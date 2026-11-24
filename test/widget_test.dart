@@ -31,10 +31,10 @@ void main() {
         id: 'screen_replacement',
         name: 'Screen Replacement',
         description: 'Cracked display',
+        iconEmoji: '📱',
         estimatedPrice: 2499,
       );
       expect(repair.priceDisplay, '₹2499');
-      expect(repair.imageAsset, 'assets/images/repairs/screen_repair.jpg');
     });
 
     test('Booking draft preserves state accurately', () {

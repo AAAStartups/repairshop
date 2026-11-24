@@ -46,7 +46,7 @@ class ApiClient {
           return handler.next(options);
         },
         onError: (DioException e, handler) {
-          debugPrint('[QuickFix API Error] ${e.requestOptions.method} ${e.requestOptions.uri}: ${e.message}');
+          debugPrint('⚠️ [QuickFix API Error] ${e.requestOptions.method} ${e.requestOptions.uri}: ${e.message}');
           return handler.next(e);
         },
       ),

@@ -18,10 +18,10 @@ class _PickupSchedulingScreenState extends ConsumerState<PickupSchedulingScreen>
   String? _selectedSlot = 'morning';
 
   final List<Map<String, dynamic>> _timeSlots = [
-    {'id': 'morning', 'label': 'Morning Window', 'time': '9:00 AM – 12:00 PM', 'icon': Icons.wb_twilight_rounded, 'badge': 'Most Popular'},
-    {'id': 'afternoon', 'label': 'Afternoon Window', 'time': '12:00 PM – 3:00 PM', 'icon': Icons.wb_sunny_rounded, 'badge': 'Fastest'},
-    {'id': 'evening', 'label': 'Evening Window', 'time': '3:00 PM – 7:00 PM', 'icon': Icons.nights_stay_rounded, 'badge': null},
-    {'id': 'night', 'label': 'Night Window', 'time': '7:00 PM – 9:00 PM', 'icon': Icons.dark_mode_rounded, 'badge': null},
+    {'id': 'morning', 'label': 'Morning Window', 'time': '9:00 AM – 12:00 PM', 'emoji': '🌅', 'badge': 'Most Popular'},
+    {'id': 'afternoon', 'label': 'Afternoon Window', 'time': '12:00 PM – 3:00 PM', 'emoji': '☀️', 'badge': 'Fastest'},
+    {'id': 'evening', 'label': 'Evening Window', 'time': '3:00 PM – 7:00 PM', 'emoji': '🌇', 'badge': null},
+    {'id': 'night', 'label': 'Night Window', 'time': '7:00 PM – 9:00 PM', 'emoji': '🌙', 'badge': null},
   ];
 
   List<DateTime> get _next7Days => List.generate(7, (i) => DateTime.now().add(Duration(days: i)));
@@ -347,11 +347,7 @@ class _PickupSchedulingScreenState extends ConsumerState<PickupSchedulingScreen>
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: Center(
-                                child: Icon(
-                                  slot['icon'] as IconData,
-                                  size: 22,
-                                  color: isSelected ? const Color(0xFFEDB000) : const Color(0xFF003A26),
-                                ),
+                                child: Text(slot['emoji']!, style: const TextStyle(fontSize: 20)),
                               ),
                             ),
                             const SizedBox(width: 14),

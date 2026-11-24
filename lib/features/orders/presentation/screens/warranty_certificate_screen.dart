@@ -54,7 +54,7 @@ class WarrantyCertificateScreen extends StatelessWidget {
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Generating official tax invoice PDF with GST compliance...'),
+                  content: Text('📄 Generating official tax invoice PDF with GST compliance...'),
                   backgroundColor: Color(0xFF003A26),
                 ),
               );
@@ -349,7 +349,7 @@ class WarrantyCertificateScreen extends StatelessWidget {
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Certificate link copied to clipboard for sharing!'),
+                        content: Text('📲 Certificate link copied to clipboard for sharing!'),
                         backgroundColor: Color(0xFF003A26),
                       ),
                     );
@@ -388,7 +388,7 @@ class WarrantyCertificateScreen extends StatelessWidget {
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Need warranty service? A technician will be assigned immediately.'),
+                        content: Text('🛡️ Need warranty service? A technician will be assigned immediately.'),
                         backgroundColor: Color(0xFF003A26),
                       ),
                     );

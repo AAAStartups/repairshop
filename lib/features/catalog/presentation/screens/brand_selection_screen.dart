@@ -562,26 +562,11 @@ class _BrandLogoContainer extends StatelessWidget {
               height: imageSize,
               fit: BoxFit.contain, // Requirement 5: object-fit: contain to prevent logo distortion
               errorBuilder: (context, error, stackTrace) {
-                // Graceful fallback to initial badge if asset fails to load
+                // Graceful fallback to emoji icon if asset fails to load
                 return Center(
-                  child: Container(
-                    width: imageSize * 0.75,
-                    height: imageSize * 0.75,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF003A26).withValues(alpha: 0.08),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        brand.name.isNotEmpty ? brand.name[0] : 'D',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: imageSize * 0.4,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF003A26),
-                        ),
-                      ),
-                    ),
+                  child: Text(
+                    brand.logoEmoji,
+                    style: TextStyle(fontSize: imageSize * 0.65),
                   ),
                 );
               },
