@@ -4,6 +4,7 @@ import 'package:quickfix/core/services/location_service.dart';
 import 'package:quickfix/features/catalog/data/catalog_repository.dart';
 import 'package:quickfix/features/booking/data/booking_repository.dart';
 import 'package:quickfix/features/booking/domain/models/booking_draft.dart';
+import 'package:quickfix/features/tracking/data/tracking_repository.dart';
 
 void main() {
   group('QuickFix API Layer & Repository Tests', () {
@@ -51,6 +52,17 @@ void main() {
       );
       expect(loc.fullAddressText, equals('100 Feet Road, Indiranagar, Bengaluru, 560038'));
       expect(loc.isServiceable, isTrue);
+    });
+
+    test('TrackingRepository handles offline track calls gracefully', () async {
+      final client = ApiClient(customBaseUrl: 'http://localhost:59999/api'); // unreachable
+      final repo = TrackingRepository(client);
+
+      final tracking = await repo.fetchOrderTracking('QF-89421');
+      expect(tracking, isNull);
+
+      final advanced = await repo.advanceStage('QF-89421');
+      expect(advanced, isFalse);
     });
   });
 }

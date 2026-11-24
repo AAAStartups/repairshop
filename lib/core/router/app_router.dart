@@ -10,6 +10,7 @@ import '../../features/booking/presentation/screens/pickup_scheduling_screen.dar
 import '../../features/booking/presentation/screens/booking_summary_screen.dart';
 import '../../features/booking/presentation/screens/booking_success_screen.dart';
 import '../../features/tracking/presentation/screens/repair_tracking_screen.dart';
+import '../../features/orders/presentation/screens/warranty_certificate_screen.dart';
 import '../../features/orders/presentation/screens/orders_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/support/presentation/screens/support_screen.dart';
@@ -61,6 +62,14 @@ final appRouter = GoRouter(
       path: '/track-repair/:orderId',
       builder: (context, state) => RepairTrackingScreen(
         orderId: state.pathParameters['orderId'] ?? 'QF-00000',
+      ),
+    ),
+    GoRoute(
+      path: '/warranty/:orderId',
+      builder: (context, state) => WarrantyCertificateScreen(
+        orderId: state.pathParameters['orderId'] ?? 'QF-00000',
+        deviceName: state.uri.queryParameters['device'],
+        amount: double.tryParse(state.uri.queryParameters['amount'] ?? ''),
       ),
     ),
     // Main bottom navigation tabs shell

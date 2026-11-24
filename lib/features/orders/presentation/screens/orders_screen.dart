@@ -95,7 +95,7 @@ class _CompletedOrdersTab extends StatelessWidget {
           date: '28 Oct 2026',
           price: '₹5,499 (Paid via UPI)',
           warrantyRemaining: '142 Days Warranty Left',
-          onTap: () => context.push('/track-repair/QF-77210'),
+          onTap: () => context.push('/warranty/QF-77210?device=MacBook%20Pro%20M2&amount=5499'),
         ),
         const SizedBox(height: 12),
         _OrderCard(
@@ -108,7 +108,7 @@ class _CompletedOrdersTab extends StatelessWidget {
           date: '14 Sep 2026',
           price: '₹1,299 (Paid via Cash)',
           warrantyRemaining: '98 Days Warranty Left',
-          onTap: () => context.push('/track-repair/QF-65104'),
+          onTap: () => context.push('/warranty/QF-65104?device=OnePlus%2012&amount=1299'),
         ),
       ],
     );
