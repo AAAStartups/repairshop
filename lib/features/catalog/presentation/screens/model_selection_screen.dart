@@ -25,7 +25,7 @@ class _ModelSelectionScreenState extends ConsumerState<ModelSelectionScreen> {
     final brandId = draft.brandId ?? 'apple';
     final brandName = draft.brandName ?? 'Apple';
     final modelsAsync = ref.watch(deviceModelsListProvider(brandId));
-    final models = modelsAsync.valueOrNull ?? (mockDevicesByBrand[brandId] ?? []);
+    final models = modelsAsync.valueOrNull ?? [];
 
     // Extract all unique series for the filter rail
     final seriesSet = <String>{'All'};

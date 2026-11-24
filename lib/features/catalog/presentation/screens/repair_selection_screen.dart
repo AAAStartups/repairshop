@@ -5,7 +5,6 @@ import '../../../booking/presentation/controllers/booking_flow_controller.dart';
 import '../../../../core/widgets/qf_pressable.dart';
 import '../../../../core/widgets/qf_step_indicator.dart';
 import '../../data/catalog_repository.dart';
-import '../../domain/models/repair_service_model.dart';
 
 class RepairSelectionScreen extends ConsumerWidget {
   const RepairSelectionScreen({super.key});
@@ -17,7 +16,7 @@ class RepairSelectionScreen extends ConsumerWidget {
     final brandName = draft.brandName ?? 'Apple';
     final modelName = draft.modelName ?? 'Device';
     final repairsAsync = ref.watch(repairServicesListProvider(draft.modelId ?? 'default'));
-    final services = repairsAsync.valueOrNull ?? mockRepairServices;
+    final services = repairsAsync.valueOrNull ?? [];
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F5),

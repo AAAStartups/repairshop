@@ -14,16 +14,27 @@ void main() {
       expect(AppColors.background.value, 0xFFE8ECEA);
     });
 
-    test('Catalog brands data is loaded correctly', () {
-      expect(mockBrands.length, greaterThanOrEqualTo(10));
-      expect(mockBrands.any((b) => b.id == 'apple'), isTrue);
-      expect(mockBrands.any((b) => b.id == 'samsung'), isTrue);
+    test('BrandModel constructs correctly with properties', () {
+      const brand = BrandModel(
+        id: 'apple',
+        name: 'Apple',
+        logoAsset: 'assets/brands/apple.png',
+        isPopular: true,
+      );
+      expect(brand.id, 'apple');
+      expect(brand.name, 'Apple');
+      expect(brand.assetPath, 'assets/brands/apple.png');
     });
 
-    test('Repair service catalogue contains all key categories', () {
-      expect(mockRepairServices.any((s) => s.id == 'screen_replacement'), isTrue);
-      expect(mockRepairServices.any((s) => s.id == 'battery_replacement'), isTrue);
-      expect(mockRepairServices.any((s) => s.id == 'charging_port'), isTrue);
+    test('RepairServiceModel formats price display correctly', () {
+      const repair = RepairServiceModel(
+        id: 'screen_replacement',
+        name: 'Screen Replacement',
+        description: 'Cracked display',
+        iconEmoji: '📱',
+        estimatedPrice: 2499,
+      );
+      expect(repair.priceDisplay, '₹2499');
     });
 
     test('Booking draft preserves state accurately', () {

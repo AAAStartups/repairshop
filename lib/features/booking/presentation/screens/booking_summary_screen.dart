@@ -871,37 +871,10 @@ class _AuthBottomSheetState extends ConsumerState<_AuthBottomSheet> {
 
               const SizedBox(height: 10),
 
-              // Quick Fill Helper Pill
+              // Resend Code Action
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      _otpCtrl.text = '123456';
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEDB000).withValues(alpha: 0.18),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.flash_on_rounded, color: Color(0xFF003A26), size: 14),
-                          SizedBox(width: 4),
-                          Text(
-                            'Demo OTP: 123456',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF003A26),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                   Text(
                     _resendSeconds > 0 ? 'Resend in ${_resendSeconds}s' : 'Resend Code',
                     style: TextStyle(

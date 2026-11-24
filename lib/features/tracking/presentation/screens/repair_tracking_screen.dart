@@ -336,13 +336,108 @@ class _RepairTrackingScreenState extends ConsumerState<RepairTrackingScreen> wit
     final orderAsync = ref.watch(orderTrackingProvider(widget.orderId));
     final order = orderAsync.valueOrNull;
 
-    final currentStageIndex = (order?['currentStageIndex'] as int?) ?? 3;
-    final totalAmount = order?['totalAmount'] != null ? '₹${(order!['totalAmount'] as num).toInt()}' : '₹3,899';
-    final device = order?['device'] ?? 'Apple iPhone 15 Pro';
-    final tech = order?['technician'];
-    final techName = tech?['name'] ?? 'Rajesh Kannan';
-    final techVehicle = tech?['vehicle'] ?? 'QuickFix Express EV (KA-03-QF-9081)';
-    final techRating = (tech?['rating'] as num?)?.toDouble() ?? 4.96;
+    if (orderAsync.isLoading && order == null) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF3F6F4),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: QFPressable(
+            onTap: () => context.go('/home'),
+            child: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8ECEA),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: Color(0xFF003A26)),
+            ),
+          ),
+          title: Text(
+            'Order #${widget.orderId}',
+            style: const TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF003A26)),
+          ),
+        ),
+        body: const Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(color: Color(0xFF003A26)),
+              SizedBox(height: 16),
+              Text(
+                'Retrieving live lab telemetry...',
+                style: TextStyle(fontFamily: 'Inter', fontSize: 14, color: Color(0xFF5F6F67), fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (order == null) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF3F6F4),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: QFPressable(
+            onTap: () => context.go('/home'),
+            child: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8ECEA),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: Color(0xFF003A26)),
+            ),
+          ),
+          title: Text(
+            'Order #${widget.orderId}',
+            style: const TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF003A26)),
+          ),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.search_off_rounded, size: 64, color: Color(0xFF5F6F67)),
+                const SizedBox(height: 16),
+                Text(
+                  'Order #${widget.orderId} Not Found',
+                  style: const TextStyle(fontFamily: 'Inter', fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF003A26)),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'No active booking found with this tracking ID. Please verify the booking reference number.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontFamily: 'Inter', fontSize: 13, color: Color(0xFF5F6F67)),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => context.go('/home'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF003A26),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  child: const Text('Back to Home'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final currentStageIndex = (order['currentStageIndex'] as int?) ?? 1;
+    final totalAmount = '₹${(order['totalAmount'] as num? ?? 0).toInt()}';
+    final device = (order['device'] as String?) ?? 'Device';
+    final tech = order['technician'];
+    final techName = tech?['name'] ?? 'Assigned Specialist';
+    final techVehicle = tech?['vehicle'] ?? 'QuickFix Express Unit';
+    final techRating = (tech?['rating'] as num?)?.toDouble() ?? 4.9;
 
     final activeStage = _defaultStages[(currentStageIndex - 1).clamp(0, _defaultStages.length - 1)];
 

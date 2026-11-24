@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/widgets/qf_pressable.dart';
+import 'package:quickfix/core/constants/app_spacing.dart';
+import 'package:quickfix/core/widgets/qf_pressable.dart';
+import 'package:quickfix/features/catalog/data/catalog_repository.dart';
+import 'package:quickfix/features/catalog/domain/models/repair_service_model.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -49,58 +51,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       'cta': 'Book Repair',
       'type': 'expert',
       'gradient': [Color(0xFF052014), Color(0xFF043722), Color(0xFF0C5035)],
-    },
-  ];
-
-  // Popular Services Cards (Matching Circle Store horizontal card architecture)
-  final List<Map<String, dynamic>> _popularServices = [
-    {
-      'id': 'screen_replace',
-      'title': 'Screen Replacement',
-      'sub': 'Original OEM grade glass',
-      'badge': 'OEM Grade',
-      'price': '₹1,499',
-      'mrp': '₹2,999',
-      'discount': '50% OFF',
-      'rating': '4.9 ★ (1.4k)',
-      'type': 'screen',
-      'gradient': [Color(0xFF003020), Color(0xFF08563A)],
-    },
-    {
-      'id': 'battery_replace',
-      'title': 'Battery Replacement',
-      'sub': 'Restore 100% health & backup',
-      'badge': 'Original Part',
-      'price': '₹999',
-      'mrp': '₹1,999',
-      'discount': '50% OFF',
-      'rating': '4.8 ★ (980)',
-      'type': 'battery',
-      'gradient': [Color(0xFF0A3322), Color(0xFF0F5A3B)],
-    },
-    {
-      'id': 'water_damage',
-      'title': 'Water Damage Repair',
-      'sub': 'Deep ultrasonic diagnostics',
-      'badge': 'Express 60m',
-      'price': '₹799',
-      'mrp': '₹1,499',
-      'discount': '46% OFF',
-      'rating': '4.9 ★ (720)',
-      'type': 'water',
-      'gradient': [Color(0xFF042D1E), Color(0xFF095035)],
-    },
-    {
-      'id': 'charging_port',
-      'title': 'Charging Port Fix',
-      'sub': 'Type-C & Lightning pin fix',
-      'badge': 'OEM Grade',
-      'price': '₹699',
-      'mrp': '₹1,299',
-      'discount': '46% OFF',
-      'rating': '4.7 ★ (610)',
-      'type': 'port',
-      'gradient': [Color(0xFF0E3826), Color(0xFF054C30)],
     },
   ];
 
@@ -974,25 +924,71 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           // Horizontal List of Large Image Cards (Circle Store layout)
           SizedBox(
             height: 278,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _popularServices.length,
-              itemBuilder: (context, index) {
-                final svc = _popularServices[index];
-                return _buildServiceCard(svc);
-              },
-            ),
+            child: () {
+              final popularRepairsAsync = ref.watch(popularRepairsProvider);
+              final repairs = popularRepairsAsync.valueOrNull ?? [];
+
+              if (popularRepairsAsync.isLoading && repairs.isEmpty) {
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: 4,
+                  itemBuilder: (_, __) => Container(
+                    width: 184,
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+                      border: Border.all(color: const Color(0xFFE8ECEA), width: 1),
+                    ),
+                    child: const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF003A26)),
+                    ),
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: repairs.length,
+                itemBuilder: (context, index) {
+                  final svc = repairs[index];
+                  return _buildServiceCard(svc);
+                },
+              );
+            }(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildServiceCard(Map<String, dynamic> svc) {
-    final svcId = svc['id'] as String;
+  String _getArtworkType(RepairServiceModel svc) {
+    final cat = (svc.category ?? '').toLowerCase();
+    final name = svc.name.toLowerCase();
+    if (cat.contains('screen') || name.contains('screen') || name.contains('display')) return 'screen';
+    if (cat.contains('battery') || name.contains('battery')) return 'battery';
+    if (cat.contains('water') || name.contains('water')) return 'water';
+    return 'port';
+  }
+
+  Color _getArtworkBackground(String type) {
+    switch (type) {
+      case 'screen': return const Color(0xFF003020);
+      case 'battery': return const Color(0xFF0A3322);
+      case 'water': return const Color(0xFF042D1E);
+      default: return const Color(0xFF0E3826);
+    }
+  }
+
+  Widget _buildServiceCard(RepairServiceModel svc) {
+    final svcId = svc.id;
     final isFavorite = _favoriteServices.contains(svcId);
+    final artworkType = _getArtworkType(svc);
+    final bgColor = _getArtworkBackground(artworkType);
 
     return QFPressable(
       onTap: () {
@@ -1026,10 +1022,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   height: 138,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: (svc['gradient'] as List<Color>).first,
+                    color: bgColor,
                   ),
                   child: Center(
-                    child: _buildServiceCardArtwork(svc['type'] as String),
+                    child: _buildServiceCardArtwork(artworkType),
                   ),
                 ),
 
@@ -1044,7 +1040,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      svc['badge'] as String,
+                      svc.badge ?? 'OEM Grade',
                       style: const TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 10.5,
@@ -1061,8 +1057,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   right: 10,
                   child: IconButton(
                     tooltip: isFavorite
-                        ? 'Remove ${svc['title']} from favorites'
-                        : 'Add ${svc['title']} to favorites',
+                        ? 'Remove ${svc.name} from favorites'
+                        : 'Add ${svc.name} to favorites',
                     constraints: const BoxConstraints.tightFor(width: 44, height: 44),
                     padding: EdgeInsets.zero,
                     style: IconButton.styleFrom(
@@ -1100,7 +1096,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     children: [
                       Expanded(
                         child: Text(
-                          svc['title'] as String,
+                          svc.name,
                           style: const TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 14,
@@ -1115,7 +1111,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    svc['sub'] as String,
+                    svc.description,
                     style: const TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 12,
@@ -1143,7 +1139,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   Row(
                     children: [
                       Text(
-                        svc['price'] as String,
+                        svc.priceDisplay,
                         style: const TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 15,
@@ -1151,16 +1147,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           color: Color(0xFF003A26),
                         ),
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        svc['mrp'] as String,
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 11,
-                          color: Color(0xFF5F6F67),
-                          decoration: TextDecoration.lineThrough,
+                      if (svc.mrpDisplay != null) ...[
+                        const SizedBox(width: 6),
+                        Text(
+                          svc.mrpDisplay!,
+                          style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 11,
+                            color: Color(0xFF5F6F67),
+                            decoration: TextDecoration.lineThrough,
+                          ),
                         ),
-                      ),
+                      ],
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
@@ -1169,7 +1167,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
-                          svc['discount'] as String,
+                          svc.discount ?? '40% OFF',
                           style: const TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 9,

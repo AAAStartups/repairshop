@@ -58,16 +58,20 @@ class BookingRepository {
           message: res.data['message'],
         );
       }
-    } catch (_) {
-      // Graceful offline fallback
+    } catch (e) {
+      return BookingResult(
+        isSuccess: false,
+        bookingNumber: '',
+        totalAmount: draft.estimatedCost,
+        message: 'Network error: Unable to connect to QuickFix server.',
+      );
     }
 
-    final fallbackBookingNumber = 'QF-2026-${1000 + (DateTime.now().millisecondsSinceEpoch % 9000)}';
     return BookingResult(
-      isSuccess: true,
-      bookingNumber: fallbackBookingNumber,
-      totalAmount: draft.estimatedCost > 0 ? draft.estimatedCost : 2499.0,
-      message: 'Booking confirmed under Zero-Advance Guarantee.',
+      isSuccess: false,
+      bookingNumber: '',
+      totalAmount: draft.estimatedCost,
+      message: 'Failed to confirm booking.',
     );
   }
 

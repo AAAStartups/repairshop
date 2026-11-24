@@ -22,8 +22,7 @@ class AuthRepository {
       );
       return res.statusCode == 200 && res.data['success'] == true;
     } catch (_) {
-      // Mock acceptance for testing offline
-      return true;
+      return false;
     }
   }
 
@@ -60,19 +59,8 @@ class AuthRepository {
           createdAt: DateTime.now(),
         );
       }
-    } catch (_) {
-      // Fallback
-    }
+    } catch (_) {}
 
-    // Default development fallback
-    if (otp == '123456' || otp.length == 6) {
-      return UserModel(
-        uid: 'user_${DateTime.now().millisecondsSinceEpoch}',
-        phone: phoneNumber,
-        name: fullName ?? 'QuickFix Member',
-        createdAt: DateTime.now(),
-      );
-    }
     return null;
   }
 

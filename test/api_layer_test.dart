@@ -8,17 +8,15 @@ import 'package:quickfix/features/tracking/data/tracking_repository.dart';
 
 void main() {
   group('QuickFix API Layer & Repository Tests', () {
-    test('CatalogRepository returns offline mock brands gracefully', () async {
+    test('CatalogRepository handles offline error and returns empty list', () async {
       final client = ApiClient(customBaseUrl: 'http://localhost:59999/api'); // unreachable
       final repo = CatalogRepository(client);
 
       final brands = await repo.fetchBrands();
-      expect(brands, isNotEmpty);
-      expect(brands.any((b) => b.id == 'apple'), isTrue);
-      expect(brands.any((b) => b.id == 'xiaomi'), isTrue);
+      expect(brands, isEmpty);
     });
 
-    test('BookingRepository creates booking with zero-advance policy', () async {
+    test('BookingRepository handles offline network error safely', () async {
       final client = ApiClient(customBaseUrl: 'http://localhost:59999/api'); // unreachable
       final repo = BookingRepository(client);
 
@@ -37,9 +35,7 @@ void main() {
       );
 
       final result = await repo.submitBooking(draft);
-      expect(result.isSuccess, isTrue);
-      expect(result.bookingNumber, startsWith('QF-'));
-      expect(result.totalAmount, equals(3899.0));
+      expect(result.isSuccess, isFalse);
     });
 
     test('QuickFixLocationResult constructs address text correctly', () {

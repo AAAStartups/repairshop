@@ -14,6 +14,7 @@ class ApiEndpoints {
 
   // Catalog
   static const String brands = '/catalog/brands';
+  static const String popularRepairs = '/catalog/repairs/popular';
   static String brandModels(String brandId) => '/catalog/brands/$brandId/models';
   static String modelRepairs(String modelId) => '/catalog/models/$modelId/repairs';
 

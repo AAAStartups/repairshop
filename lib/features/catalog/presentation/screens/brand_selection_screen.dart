@@ -34,7 +34,7 @@ class _BrandSelectionScreenState extends ConsumerState<BrandSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     final brandsAsync = ref.watch(brandsListProvider);
-    final allBrands = brandsAsync.valueOrNull ?? mockBrands;
+    final allBrands = brandsAsync.valueOrNull ?? [];
     final popularBrands = allBrands.where((b) => b.isPopular).toList();
     final filtered = _getFiltered(allBrands);
 

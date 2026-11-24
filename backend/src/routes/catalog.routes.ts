@@ -34,6 +34,42 @@ catalogRouter.get("/brands", async (_req: Request, res: Response) => {
   }
 });
 
+// GET /api/catalog/repairs/popular - Live popular repairs across devices
+catalogRouter.get("/repairs/popular", async (_req: Request, res: Response) => {
+  try {
+    const popularRepairs = await prisma.repairService.findMany({
+      where: { isActive: true },
+      orderBy: [{ isPopular: "desc" }, { price: "asc" }],
+      take: 6,
+      include: {
+        model: {
+          include: { brand: true },
+        },
+      },
+    });
+
+    return res.json({
+      success: true,
+      repairs: popularRepairs.map((r) => ({
+        id: r.id,
+        title: r.title,
+        category: r.category,
+        description: r.description,
+        price: r.price,
+        mrp: Math.round(r.price * 1.8),
+        discount: "45% OFF",
+        turnaroundMinutes: r.turnaroundMinutes,
+        warrantyDays: r.warrantyDays,
+        badge: r.badge || "OEM Grade",
+        isPopular: r.isPopular,
+        device: `${r.model.brand.name} ${r.model.name}`,
+      })),
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // GET /api/catalog/brands/:brandId/models
 catalogRouter.get("/brands/:brandId/models", async (req: Request, res: Response) => {
   try {

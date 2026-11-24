@@ -517,21 +517,6 @@ class _GuestProfileViewState extends State<_GuestProfileView> {
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xFFD1D9D6))),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        GestureDetector(
-                          onTap: () => _otpCtrl.text = '123456',
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFEDB000).withValues(alpha: 0.18),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Text(
-                              '⚡ Tap to use Demo OTP: 123456',
-                              style: TextStyle(fontFamily: 'Inter', fontSize: 11.5, fontWeight: FontWeight.w700, color: Color(0xFF003A26)),
-                            ),
-                          ),
-                        ),
                         const SizedBox(height: 16),
                         QFPressable(
                           onTap: auth.isLoading
