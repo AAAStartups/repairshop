@@ -220,6 +220,48 @@ class ProfileScreen extends ConsumerWidget {
 
           const SizedBox(height: 14),
 
+          // Technician Operations Mode Toggle
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: QFPressable(
+              onTap: () => context.push('/technician'),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF003A26), Color(0xFF080C0A)],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF003A26).withValues(alpha: 0.2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.engineering_rounded, color: Color(0xFFEDB000), size: 20),
+                    SizedBox(width: 10),
+                    Text(
+                      'Switch to Technician Field Portal',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
           // Sign out button
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),

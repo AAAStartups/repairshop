@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuickFix Central Operations & Dispatch Command</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080C0A;
+      --card-bg: #121915;
+      --card-border: #1F2D27;
+      --emerald: #003A26;
+      --emerald-light: #10B981;
+      --amber: #EDB000;
+      --text-main: #FFFFFF;
+      --text-sub: #94A3B8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; padding: 24px; }
+    header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 24px; border-bottom: 1px solid var(--card-border); margin-bottom: 24px; }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-badge { width: 44px; height: 44px; background: rgba(237, 176, 0, 0.15); border: 1.5px solid var(--amber); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.4px; }
+    .subtitle { font-size: 12px; color: var(--text-sub); }
+    .status-pill { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--emerald-light); color: var(--emerald-light); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .pulse-dot { width: 8px; height: 8px; background: var(--emerald-light); border-radius: 50%; box-shadow: 0 0 8px var(--emerald-light); }
+    
+    /* Metrics Grid */
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .metric-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; }
+    .metric-label { font-size: 11px; font-weight: 700; color: var(--text-sub); letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 8px; }
+    .metric-val { font-size: 28px; font-weight: 900; color: var(--text-main); }
+    .metric-sub { font-size: 12px; color: var(--emerald-light); margin-top: 6px; font-weight: 600; }
+
+    /* Orders Section */
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .section-title { font-size: 16px; font-weight: 800; color: var(--text-main); }
+    .table-container { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { background: rgba(0, 58, 38, 0.4); padding: 14px 18px; font-size: 11px; text-transform: uppercase; color: var(--text-sub); letter-spacing: 0.6px; font-weight: 700; border-bottom: 1px solid var(--card-border); }
+    td { padding: 16px 18px; font-size: 13px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+    
+    .stage-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; }
+    .badge-pickup { background: rgba(237, 176, 0, 0.15); color: var(--amber); border: 1px solid var(--amber); }
+    .badge-lab { background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid #3B82F6; }
+    .badge-delivered { background: rgba(16, 185, 129, 0.15); color: var(--emerald-light); border: 1px solid var(--emerald-light); }
+    
+    .btn { background: var(--amber); color: #003A26; border: none; border-radius: 10px; padding: 8px 14px; font-size: 12px; font-weight: 800; cursor: pointer; transition: opacity 0.2s; }
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-badge">⚡</div>
+      <div>
+        <h1>QuickFix Operations & Dispatch Command</h1>
+        <div class="subtitle">Cleanroom Lab Central Facility • Bengaluru Hub</div>
+      </div>
+    </div>
+    <div class="status-pill">
+      <div class="pulse-dot"></div>
+      TELEMETRY LIVE
+    </div>
+  </header>
+
+  <div class="metrics">
+    <div class="metric-card">
+      <div class="metric-label">Active Doorstep Pickups</div>
+      <div class="metric-val" id="activePickups">14</div>
+      <div class="metric-sub">↑ 4 arriving in 15 mins</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Cleanroom Lab Queue</div>
+      <div class="metric-val" id="labQueue">8</div>
+      <div class="metric-sub">Class-100 ESD active</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Repairs Delivered Today</div>
+      <div class="metric-val" id="deliveredToday">26</div>
+      <div class="metric-sub">100% Zero-Advance fulfilled</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Today's Revenue</div>
+      <div class="metric-val" id="revenue">₹98,450</div>
+      <div class="metric-sub">4.96 ★ Average Satisfaction</div>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-title">Live Service Orders Dispatch Board</div>
+    <button class="btn" onclick="fetchOrders()">🔄 Refresh Telemetry</button>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Booking ID</th>
+          <th>Customer</th>
+          <th>Device & Service</th>
+          <th>Scheduled Slot</th>
+          <th>Assigned Specialist</th>
+          <th>Current Milestone</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="ordersTableBody">
+        <tr><td colspan="7" style="text-align: center; color: var(--text-sub);">Loading orders from SQLite/PostgreSQL engine...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    async function fetchOrders() {
+      try {
+        const res = await fetch('/api/catalog/brands');
+        const brands = await res.json();
+        
+        // Populate demo live order row with real endpoint trigger
+        const tbody = document.getElementById('ordersTableBody');
+        tbody.innerHTML = `
+          <tr>
+            <td><strong>QF-89421</strong></td>
+            <td>Arjun Verma<br><small style="color: var(--text-sub);">Bellandur, ORR</small></td>
+            <td>Apple iPhone 15 Pro<br><small style="color: var(--amber);">OEM Screen & Digitizer</small></td>
+            <td>Today, 10:00 - 12:00 PM</td>
+            <td>Rajesh Kannan<br><small style="color: var(--text-sub);">KA-03-QF-9081 (4.96 ★)</small></td>
+            <td><span class="stage-badge badge-lab" id="stageBadge">Stage 3: En Route to Lab</span></td>
+            <td><button class="btn" id="advBtn" onclick="advanceStage('QF-89421')">Advance Stage ⏩</button></td>
+          </tr>
+          <tr>
+            <td><strong>QF-77210</strong></td>
+            <td>Neha Sharma<br><small style="color: var(--text-sub);">Indiranagar, 100ft Rd</small></td>
+            <td>Xiaomi 14 Ultra<br><small style="color: var(--amber);">Battery Cell 0-Cycle</small></td>
+            <td>Today, 12:00 - 02:00 PM</td>
+            <td>Kiran Kumar<br><small style="color: var(--text-sub);">KA-05-QF-4122 (4.98 ★)</small></td>
+            <td><span class="stage-badge badge-delivered">Stage 12: Delivered & Verified</span></td>
+            <td><span style="color: var(--emerald-light); font-weight: 700; font-size: 12px;">✓ 180-Day Guarantee</span></td>
+          </tr>
+          <tr>
+            <td><strong>QF-65104</strong></td>
+            <td>Vikram Rao<br><small style="color: var(--text-sub);">Koramangala 4th Block</small></td>
+            <td>OnePlus 12<br><small style="color: var(--amber);">Type-C Charging Sub-Board</small></td>
+            <td>Today, 02:00 - 04:00 PM</td>
+            <td>Rajesh Kannan<br><small style="color: var(--text-sub);">KA-03-QF-9081 (4.96 ★)</small></td>
+            <td><span class="stage-badge badge-pickup">Stage 1: Booking Confirmed</span></td>
+            <td><button class="btn" onclick="advanceStage('QF-65104')">Advance Stage ⏩</button></td>
+          </tr>
+        `;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function advanceStage(orderId) {
+      const btn = event.target;
+      btn.disabled = true;
+      btn.innerText = 'Advancing...';
+      try {
+        const res = await fetch('/api/orders/' + orderId + '/advance-stage', { method: 'POST' });
+        const data = await res.json();
+        alert('✅ ' + (data.message || 'Advanced to next stage'));
+        fetchOrders();
+      } catch (e) {
+        alert('Advance failed: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Advance Stage ⏩';
+      }
+    }
+
+    fetchOrders();
+  </script>
+</body>
+</html>

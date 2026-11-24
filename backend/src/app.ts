@@ -1,5 +1,6 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
+import path from "path";
 import { authRouter } from "./routes/auth.routes.js";
 import { catalogRouter } from "./routes/catalog.routes.js";
 import { bookingRouter } from "./routes/booking.routes.js";
@@ -11,6 +12,9 @@ export const app: Application = express();
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve Admin Operations Dashboard
+app.use("/admin", express.static(path.join(process.cwd(), "public")));
 
 // Health Check
 app.get("/api/health", (_req: Request, res: Response) => {
