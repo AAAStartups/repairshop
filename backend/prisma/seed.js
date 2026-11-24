@@ -52,8 +52,12 @@ async function main() {
         { name: "Xiaomi", slug: "xiaomi", popularity: 88, country: "China" },
         { name: "Google Pixel", slug: "pixel", popularity: 85, country: "USA" },
         { name: "Vivo", slug: "vivo", popularity: 75, country: "China" },
+        { name: "Oppo", slug: "oppo", popularity: 72, country: "China" },
         { name: "Realme", slug: "realme", popularity: 70, country: "China" },
+        { name: "Motorola", slug: "motorola", popularity: 68, country: "USA" },
         { name: "Nothing", slug: "nothing", popularity: 65, country: "UK" },
+        { name: "Huawei", slug: "huawei", popularity: 60, country: "China" },
+        { name: "Nokia", slug: "nokia", popularity: 55, country: "Finland" },
     ];
     for (const b of brandsData) {
         const brand = await prisma.brand.upsert({

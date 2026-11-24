@@ -65,4 +65,36 @@ final Map<String, List<DeviceModel>> mockDevicesByBrand = {
     DeviceModel(id: 'pixel8pro', brandId: 'pixel', name: 'Pixel 8 Pro', series: 'Pixel 8', releaseYear: 2023),
     DeviceModel(id: 'pixel8', brandId: 'pixel', name: 'Pixel 8', series: 'Pixel 8', releaseYear: 2023),
   ],
+  'vivo': [
+    DeviceModel(id: 'vivox100pro', brandId: 'vivo', name: 'Vivo X100 Pro', series: 'X Series', releaseYear: 2024),
+    DeviceModel(id: 'vivox100', brandId: 'vivo', name: 'Vivo X100', series: 'X Series', releaseYear: 2024),
+    DeviceModel(id: 'vivov30pro', brandId: 'vivo', name: 'Vivo V30 Pro', series: 'V Series', releaseYear: 2024),
+  ],
+  'oppo': [
+    DeviceModel(id: 'findx7ultra', brandId: 'oppo', name: 'Find X7 Ultra', series: 'Find X Series', releaseYear: 2024),
+    DeviceModel(id: 'reno11pro', brandId: 'oppo', name: 'Reno 11 Pro 5G', series: 'Reno Series', releaseYear: 2024),
+  ],
+  'realme': [
+    DeviceModel(id: 'gt5pro', brandId: 'realme', name: 'Realme GT5 Pro', series: 'GT Series', releaseYear: 2024),
+    DeviceModel(id: 'realme12proplus', brandId: 'realme', name: 'Realme 12 Pro+ 5G', series: 'Number Series', releaseYear: 2024),
+  ],
+  'motorola': [
+    DeviceModel(id: 'edge50ultra', brandId: 'motorola', name: 'Edge 50 Ultra', series: 'Edge Series', releaseYear: 2024),
+    DeviceModel(id: 'razr50ultra', brandId: 'motorola', name: 'Razr 50 Ultra', series: 'Razr Series', releaseYear: 2024),
+  ],
+  'nothing': [
+    DeviceModel(id: 'phone2', brandId: 'nothing', name: 'Nothing Phone (2)', series: 'Phone Series', releaseYear: 2023),
+    DeviceModel(id: 'phone2a', brandId: 'nothing', name: 'Nothing Phone (2a)', series: 'Phone Series', releaseYear: 2024),
+  ],
+  'huawei': [
+    DeviceModel(id: 'pura70ultra', brandId: 'huawei', name: 'Pura 70 Ultra', series: 'Pura Series', releaseYear: 2024),
+    DeviceModel(id: 'mate60pro', brandId: 'huawei', name: 'Mate 60 Pro', series: 'Mate Series', releaseYear: 2023),
+  ],
+  'nokia': [
+    DeviceModel(id: 'g42', brandId: 'nokia', name: 'Nokia G42 5G', series: 'G Series', releaseYear: 2023),
+    DeviceModel(id: 'xr21', brandId: 'nokia', name: 'Nokia XR21 Tough', series: 'XR Series', releaseYear: 2023),
+  ],
+  'other': [
+    DeviceModel(id: 'othergeneric', brandId: 'other', name: 'Other Smartphone Model', series: 'Universal', releaseYear: 2024),
+  ],
 };

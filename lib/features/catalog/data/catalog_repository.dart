@@ -39,10 +39,14 @@ class CatalogRepository {
         if (list.isNotEmpty) {
           return list.map((b) {
             final slug = (b['slug'] ?? '').toString().toLowerCase();
+            final name = b['name'] ?? '';
+            final isXiaomi = slug == 'xiaomi' || name.toLowerCase().contains('xiaomi');
             return BrandModel(
               id: slug.isNotEmpty ? slug : b['id'].toString(),
-              name: b['name'] ?? '',
-              logoEmoji: _getEmojiForBrand(b['name'] ?? ''),
+              name: name,
+              subtitle: isXiaomi ? 'Redmi / Mi' : null,
+              logoAsset: 'assets/brands/$slug.png',
+              logoEmoji: _getEmojiForBrand(name),
               isPopular: (b['popularity'] ?? 0) >= 80,
             );
           }).toList();
@@ -118,6 +122,10 @@ class CatalogRepository {
     if (lower.contains('vivo')) return '💙';
     if (lower.contains('realme')) return '⚡';
     if (lower.contains('nothing')) return '⚪';
+    if (lower.contains('huawei')) return '🔴';
+    if (lower.contains('nokia')) return '🔷';
+    if (lower.contains('motorola')) return '🌀';
+    if (lower.contains('oppo')) return '💚';
     return '📲';
   }
 
