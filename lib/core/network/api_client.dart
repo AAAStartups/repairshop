@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,8 +14,10 @@ class ApiClient {
   ApiClient({String? customBaseUrl}) {
     String baseUrl = customBaseUrl ?? ApiEndpoints.defaultBaseUrl;
 
-    // Detect Android Emulator vs Physical device / Web / Desktop
-    if (!kIsWeb && Platform.isAndroid) {
+    if (kIsWeb) {
+      // On Web, default to production cloud backend or relative /api
+      baseUrl = customBaseUrl ?? 'https://backend-five-eta-72.vercel.app/api';
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
       // In Android emulator, 10.0.2.2 accesses host machine localhost
       // When adb reverse is active, 127.0.0.1 also works on physical phone
       baseUrl = customBaseUrl ?? ApiEndpoints.defaultBaseUrl;
